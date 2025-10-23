@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load core_filters %}
+
+{% block title %}Site Config{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page='settings' %}
+{% endblock %}
+
+{% block content %}
+
+    <h2 style="text-align: center" class="display-6">Site Config</h2>
+
+    {% if site_config %}
+        <hr>
+
+        <ul class="list-group">
+            <li class="list-group-item"><strong>App Name:</strong> <span
+                    class="text-primary">{{ site_config.name }}</span></li>
+            <li class="list-group-item"><strong>App description:</strong> <span
+                    class="text-primary">{{ site_config.description }}</span></li>
+            <li class="list-group-item"><strong>Email:</strong> <span
+                    class="text-primary">{{ site_config.email }}</span></li>
+            <li class="list-group-item"><strong>Phone:</strong> <span
+                    class="text-primary">{{ site_config.phone }}</span></li>
+            <li class="list-group-item"><strong>Telegram Bot Token:</strong> <span
+                    class="text-primary">{{ site_config.telegram_bot_token|obfuscate_token }}</span></li>
+            <li class="list-group-item"><strong>Telegram Bot Url:</strong> <span
+                    class="text-primary">{% if site_config.telegram_bot_url %}
+                <a href="{{ site_config.telegram_bot_url }}">{{ site_config.telegram_bot_url }}</a>{% endif %}</span>
+            </li>
+        </ul>
+
+        <hr>
+        <div class="btn-group btn-group-sm">
+            <a href="{% url "admin_panel:site_config_update" %}" class="btn btn-success" data-bs-toggle="tooltip"
+               data-bs-placement="top" title="Settings"><i class="bi bi-gear"></i> Update</a>
+        </div>
+
+
+    {% else %}
+
+        <hr>
+
+    {% endif %}
+
+{% endblock %}

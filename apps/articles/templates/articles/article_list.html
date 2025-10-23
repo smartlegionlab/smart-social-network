@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% load article_tags %}
+
+{% block title %}Articles{% endblock %}
+
+{% block head %}
+    <link href="{% static 'css/articles/list.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <h1 class="display-6 text-center mb-4">Articles <span class="badge bg-primary">{{ article_count }}</span></h1>
+
+        <div class="container mt-4">
+            <div class="row g-4">
+                {% for article in page_obj %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card article-card h-100">
+                            {% if article.image %}
+                                <div class="card-img-container">
+                                    <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
+                                    <div class="card-img-overlay d-flex justify-content-between align-items-start p-3">
+                                        <span class="badge bg-dark opacity-75">{{ article.reading_time }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> {{ article.published_at|date:"M d, Y" }}
+                                    </small>
+                                    <div class="article-stats">
+                                        <span class="badge bg-light text-dark" data-bs-toggle="tooltip" title="Views">
+                                            <i class="bi bi-eye"></i> {{ article.total_views }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <h5 class="card-title">{{ article.title }}</h5>
+
+                                <div class="mt-auto pt-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div class="engagement-stats">
+                                            <span class="me-2" data-bs-toggle="tooltip" title="Likes">
+                                                <i class="bi bi-heart-fill text-danger"></i> {{ article.like_count }}
+                                            </span>
+                                            <span data-bs-toggle="tooltip" title="Comments">
+                                                <i class="bi bi-chat-fill text-primary"></i> {{ article.comment_count }}
+                                            </span>
+                                        </div>
+                                        <span class="text-muted" data-bs-toggle="tooltip" title="Unique readers">
+                                            <i class="bi bi-people-fill"></i> {{ article.readers.count }}
+                                        </span>
+                                    </div>
+
+                                    <a href="{{ article.get_absolute_url }}"
+                                       class="btn btn-{{ article.style_class }} w-100 d-flex align-items-center justify-content-center">
+                                        {% if not article.is_reader %}
+                                            <i class="bi bi-book me-2"></i> Read article
+                                        {% else %}
+                                            <i class="bi bi-arrow-repeat me-2"></i> Read again
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-primary text-center py-4" role="alert">
+                            <i class="bi bi-info-circle-fill fs-4"></i>
+                            <h4 class="alert-heading mt-2">No articles available</h4>
+                            <p>Check back later for new content.</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if page_obj.has_other_pages %}
+                <div class="mt-5">
+                    {% include "paginator.html" %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

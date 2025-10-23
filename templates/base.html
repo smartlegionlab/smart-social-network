@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+{% load core_filters %}
+{% load user_filters %}
+{% load static %}
+<html lang="en" data-bs-theme="dark">
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>
+        {% block title %}
+            {% if site_config.name %}
+                {{ site_config.name }}
+            {% else %}
+                Smart Social Network
+            {% endif %}
+        {% endblock %}
+    </title>
+
+    <link href="{% static 'vendors/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/bootstrap_icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+
+    {% block head %}
+    {% endblock %}
+
+    {% block css %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+{% include "nav.html" %}
+
+
+<div class="container wrapper" style="margin: 70px auto 0;">
+
+    {% include "messages.html" %}
+
+    <div class="row">
+
+        {% block main %}
+            {% if request.user.is_authenticated %}
+                <div id="blockLeft" class="col-lg-3 {% if not request|should_always_show_sidebar %}d-none d-lg-block{% endif %}">
+                <div class="sticky-top sticky-top-my">
+                    {% block sidebar %}
+                        {% include "users/user/user_sidebar.html" %}
+                    {% endblock %}
+                </div>
+            </div>
+
+                <div id="blockRight" class="col-lg-9">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            {% endif %}
+        {% endblock %}
+
+    </div>
+
+</div>
+
+
+{% include "footer.html" %}
+
+<script src="{% static 'vendors/jquery/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'vendors/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<script>
+    window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
+</script>
+
+<script type="module" src="{% static 'core/indicator_websocket.js' %}"></script>
+<script type="module" src="{% static 'core/notifications_websocket.js' %}"></script>
+
+<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function updateMargin() {
+        const navbar = document.querySelector('.navbar');
+        const wrapper = document.querySelector('.wrapper');
+
+        if (navbar && wrapper) {
+            const navbarHeight = navbar.offsetHeight + 15;
+
+            wrapper.style.marginTop = navbarHeight + 'px';
+        }
+    }
+
+    updateMargin();
+
+    window.addEventListener('resize', updateMargin);
+
+    document.querySelector('.navbar-toggler').addEventListener('click', function() {
+        setTimeout(updateMargin, 350);
+    });
+});
+</script>
+{% block js %}
+{% endblock %}
+
+</body>
+
+</html>

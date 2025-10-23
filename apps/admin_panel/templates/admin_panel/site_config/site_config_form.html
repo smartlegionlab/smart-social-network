@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Site Config{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page='settings' %}
+{% endblock %}
+
+{% block content %}
+    <h1 class="display-6 text-center">Site Config:</h1>
+    <hr>
+    <div class="container mt-5">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field|capfirst }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="btn-group btn-group-sm">
+                <a href="{% url "admin_panel:site_config" %}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i></a>
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

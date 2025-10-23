@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Outgoing requests
+{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-person-fill-down me-2"></i>
+            Outgoing requests: <sup>{{ requests_count }}</sup>
+        </h1>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url 'users:user_detail' profile.username %}" class="btn btn-outline-secondary d-lg-none">
+                <i class="bi bi-arrow-left"></i> {{ profile.full_name }}
+            </a>
+        </div>
+    </div>
+    <hr>
+
+    <div class="btn-group btn-group-sm">
+        {% if is_owner %}
+            <a href="{% url "friends:friend_list" %}" class="btn btn-outline-primary">Friends
+                <sup>{{ friends_count }}</sup></a>
+            <a href="{% url "friends:incoming_request_list" %}" class="btn btn-outline-success">Incoming requests
+                <sup>{{ incoming_requests_count }}</sup></a>
+            <a href="{% url "friends:outgoing_request_list" %}" class="btn btn-warning disabled">Outgoing requests
+                <sup>{{ requests_count }}</sup></a>
+        {% else %}
+            <a href="{% url "users:user_detail" profile.username %}" class="btn btn-secondary d-lg-none"><i
+                    class="bi bi-arrow-left"></i> {{ profile.full_name }}</a>
+        {% endif %}
+    </div>
+    <br>
+    <br>
+
+    {% if is_owner and requests_exists %}
+        <ul class="list-group">
+            {% for request in page_obj %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a class="text-decoration-none" href="{% url 'users:user_detail' request.receiver.username %}">
+                        <img src="{{ request.receiver.get_avatar_url }}" style="height: 50px"
+                             class="figure-img img-thumbnail img-fluid rounded" alt="Photo">
+                        {{ request.receiver.full_name }}
+                        <sup>
+                            {% if request.receiver.is_online %}
+                                <i data-bs-toggle="tooltip" data-bs-placement="top" title="Online"
+                                   class="bi bi-circle-fill text-success"></i>
+                            {% else %}
+                                <i data-bs-toggle="tooltip" data-bs-placement="top" title="Offline"
+                                   class="bi bi-circle-fill text-danger"></i>
+                            {% endif %}
+                        </sup>
+                    </a>
+                    <div class="btn-group btn-group-sm">
+                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel friend request"
+                           onclick="return confirm('Are you sure?')"
+                           href="{% url 'friends:friend_request_cancel' request.id %}" class="btn btn-danger">Cancel</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        {% if page_obj.has_other_pages %} {% include "paginator.html" %} {% endif %}
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Sent requests not found...
+        </div>
+    {% endif %}
+
+{% endblock %}

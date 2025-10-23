@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload a music file{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-cloud-arrow-up"></i> Upload a music file:
+        </h1>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url "audio_files:audio_file_list" %}" class="btn btn-outline-secondary d-lg-none"><i class="bi bi-arrow-left"></i> My
+                music</a>
+        </div>
+    </div>
+    <hr>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|capfirst }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="btn-group btn-group-sm">
+            <button class="btn btn-success" type="submit">Upload</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            $('#id_title, #id_file').addClass('form-control');
+
+            $('#id_file').on('change', function () {
+                var file = this.files[0];
+                if (file) {
+                    $('#id_title').val(file.name);
+                }
+            });
+        });
+    </script>
+{% endblock %}

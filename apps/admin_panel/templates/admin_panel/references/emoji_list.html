@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Emoji List{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page='references' %}
+{% endblock %}
+
+{% block content %}
+
+    <h2 class="display-6 text-center">Emoji List: </h2>
+    <hr>
+    <div class="btn-group btn-group-sm">
+        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Back" href="{% url "admin_panel:reference_list" %}"
+           class="btn btn-secondary"><i class="bi bi-arrow-left"></i></a>
+        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Add new emoji"
+           href="{% url "admin_panel:emoji_create" %}" class="btn btn-success">+ Add</a>
+        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Delete all emoji"
+           onclick="return confirm('Are you sure?')" href="{% url "admin_panel:emojis_clear" %}"
+           class="btn btn-danger{% if not count %} disabled {% endif %}">- <i class="bi bi-trash"></i>
+            <sup>{{ count }}</sup></a>
+    </div>
+    <hr>
+    {% if is_exists %}
+        <div class="table-responsive">
+            {% if page_obj.has_other_pages %} {% include "paginator.html" %} {% endif %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for emoji in page_obj %}
+                    <tr>
+                        <td>{{ emoji.code }}</td>
+                        <td>{{ emoji.description }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Update emoji"
+                                   href="{% url "admin_panel:emoji_edit" emoji.pk %}" class="btn btn-warning"><i
+                                        class="bi bi-gear"></i></a>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Delete emoji"
+                                   onclick="return confirm('Are you sure?')"
+                                   href="{% url "admin_panel:emoji_delete" emoji.pk %}" class="btn btn-danger"><i
+                                        class="bi bi-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if page_obj.has_other_pages %} {% include "paginator.html" %} {% endif %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Not found...
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+{% endblock %}

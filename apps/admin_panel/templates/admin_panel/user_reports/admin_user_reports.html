@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile reports{% endblock %}
+
+{% block css %}
+    <link href="{% static 'vendors/datatables/css/datatables.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page=active_page %}
+{% endblock %}
+
+
+{% block content %}
+
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+
+    <h2 class="display-6 text-center">Profile reports: <sup>{{ count }}</sup></h2>
+    <hr>
+    {% if has_reports %}
+
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr class="table-primary">
+                    <th scope="col">№</th>
+                    <th scope="col">Reported Profile</th>
+                    <th scope="col">Reporter</th>
+                    <th scope="col">Assigned To</th>
+                    <th scope="col">Reason</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for report in page_obj %}
+                    <tr>
+                        <th scope="row">{{ report.id }}</th>
+                        <td>
+                            <a href="{% url "users:user_detail" report.reported_user.username %}">{{ report.reported_user.full_name }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url "users:user_detail" report.reporter.username %}">{{ report.reporter.full_name }}</a>
+                        </td>
+                        <td>
+                            {% if report.assigned_to %}
+                                <i class="bi bi-person-check text-success"></i> :
+                                <a href="{% url "users:user_detail" report.assigned_to.username %}">{{ report.assigned_to.full_name }}</a>
+                            {% else %}
+                                <i class="bi bi-person-x text-warning"></i> :
+                                <span class="text-muted">Not assigned</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ report.get_reason_display }}</td>
+                        <td>{{ report.get_status_display }}</td>
+                        <td>{{ report.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'admin_panel:admin_user_report_detail' report.pk %}"
+                                   class="btn btn-outline-primary"
+                                   data-bs-toggle="tooltip"
+                                   data-bs-placement="top"
+                                   title="View report">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                {% if not report.assigned_to and report.status == 'submitted' %}
+                                    <a href="{% url 'admin_panel:admin_user_report_assign' report.pk %}"
+                                       class="btn btn-outline-info take-report-btn"
+                                       data-report-id="{{ report.pk }}"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="top"
+                                       onclick="return confirm('Are you sure you want to take this report?')"
+                                       title="Take on the job">
+                                        <i class="bi bi-hand-index-thumb"></i>
+                                    </a>
+                                {% elif report.assigned_to.id == request.user.id %}
+                                    {% if report.status == 'in_progress' %}
+                                        <a href="{% url 'admin_panel:admin_user_report_assign' report.pk %}"
+                                           class="btn btn-outline-warning cancel-assignment-btn"
+                                           data-report-id="{{ report.pk }}"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           onclick="return confirm('Are you sure you want to cancel this assignment?')"
+                                           title="Cancel assignment">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </a>
+
+                                        <a href="{% url "admin_panel:admin_user_report_approve" report.pk %}"
+                                           class="btn btn-outline-success approve-report-btn"
+                                           data-report-id="{{ report.pk }}"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           onclick="return confirm('Are you sure?')"
+                                           title="Approve the complaint">
+                                            <i class="bi bi-check-circle"></i>
+                                        </a>
+
+                                        <a href="{% url "admin_panel:admin_user_report_reject" report.pk %}"
+                                           class="btn btn-outline-secondary reject-report-btn"
+                                           data-report-id="{{ report.pk }}"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           onclick="return confirm('Are you sure?')"
+                                           title="Reject complaint">
+                                            <i class="bi bi-x-circle"></i>
+                                        </a>
+                                    {% endif %}
+
+                                    {% if report.status in 'resolved,rejected,closed' %}
+                                        <a href="{% url "admin_panel:admin_user_report_reopen" report.id %}"
+                                           class="btn btn-outline-warning reopen-report-btn"
+                                           data-report-id="{{ report.pk }}"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           onclick="return confirm('Are you sure?')"
+                                           title="Reopen report">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </a>
+                                    {% endif %}
+
+                                    {% if report.status in 'resolved,rejected,' %}
+                                        <a href="{% url "admin_panel:admin_user_report_close" report.pk %}"
+                                           class="btn btn-outline-secondary close-report-btn"
+                                           data-report-id="{{ report.pk }}"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           onclick="return confirm('Are you sure?')"
+                                           title="Close report">
+                                            <i class="bi bi-archive"></i>
+                                        </a>
+                                    {% endif %}
+
+                                    <a href="{% url 'admin_panel:admin_user_report_delete' report.id %}"
+                                       onclick="return confirm('Are you sure you want to delete this report?')"
+                                       class="btn btn-outline-danger delete-report-btn"
+                                       data-report-id="{{ report.pk }}"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="top"
+                                       title="Delete complaint">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% if page_obj.has_other_pages %} {% include "paginator.html" %} {% endif %}
+        </div>
+
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Profile reports not found...
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'vendors/datatables/js/datatables.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.table').DataTable({
+                "paging": false,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true
+            });
+        });
+    </script>
+{% endblock %}

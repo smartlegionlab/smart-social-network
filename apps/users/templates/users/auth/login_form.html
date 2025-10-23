@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block main %}
+    <div style="width: 70%; margin: 0 auto">
+        <h1 class="text-center display-6">Sign in:</h1>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="text-center">
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-primary" type="submit">Login</button>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="alert alert-primary alert-dismissible" role="alert">
+            <p class="text-center lead">Don't have an account yet? <a class="text-decoration-none text-success"
+                                                                      href="{% url 'users:register' %}">Sign up</a> in
+                the app!</p>
+        </div>
+        {% if site_config.email %}
+            <div class="alert alert-primary alert-dismissible" role="alert">
+                <p class="text-center lead">If you have any difficulties with logging in or registering, please write <a
+                        class="text-decoration-none text-danger" href="mailto:{{ site_config.email }}">here</a>.</p>
+            </div>
+        {% endif %}
+        {% if site_config.telegram_bot_token %}
+            <div class="alert alert-primary alert-dismissible" role="alert">
+                <p class="text-center lead">If you forgot your password and your profile had a telegram chat id, you can
+                    <a href="{% url "users:password_reset" %}" class="text-warning">reset</a> it. The <a target="_blank" rel="noopener noreferrer" class="text-success"
+                                                                                    href="{{ site_config.telegram_bot_url }}">bot</a>
+                    will send it to you in telegram.</p>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

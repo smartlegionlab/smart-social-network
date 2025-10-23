@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+{% load chat_tags %}
+{% load static %}
+
+{% block title %}{{ chat.name|default:"Chat" }}{% endblock %}
+
+{% block head %}
+<style>
+.message-actions {
+    opacity: 0;
+    transition: opacity 0.2s;
+    display: flex;
+    gap: 5px;
+    background: black;
+    border-radius: 10%;
+}
+
+.message-container:hover .message-actions {
+    opacity: 1;
+}
+
+.emoji-option {
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: inline-block;
+}
+
+.emoji-option:hover {
+    transform: scale(1.2);
+}
+.message-container {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    overflow: hidden;
+    white-space: normal;
+    padding: 5px;
+}
+
+.img-block {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    max-width: 40px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <h2 class="mb-0 display-6 text-center">
+    {% if chat.is_group %}
+        <i class="bi bi-people-fill me-2"></i>Group chat: <span class="text-primary">{{ chat.name|default:"Anon" }}</span>
+    {% else %}
+        {% for user in chat.participants.all %}
+            {% if user != request.user %}
+                <i class="bi bi-person-fill me-2"></i>Chat with <span class="text-primary">{{ user.full_name }}</span>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</h2>
+    <hr>
+
+<div class="mt-2">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        {% for participant in chat.participants.all %}
+        <a href="{% url "users:user_detail" participant.username %}" style="text-decoration: none">
+            <div class="d-flex align-items-center bg-light p-2 rounded">
+                <div class="position-relative">
+                    <img src="{{ participant.get_avatar_url }}"
+                         class="rounded-circle me-2 object-fit-cover"
+                         width="32" height="32"
+                         alt="{{ participant.username }}">
+                    <span class="position-absolute bottom-0 end-0 translate-middle p-1 bg-{% if participant.is_online %}success{% else %}danger{% endif %} border border-light rounded-circle"></span>
+                </div>
+                <span>{{ participant.full_name }}</span>
+                <span id="typing-indicator-{{ participant.id }}" class="text-muted small ms-2" style="display: none;"></span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+    <hr>
+
+
+    <div class="card rounded" style="box-shadow: 0 0 5px white">
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <div class="btn-group btn-group-sm">
+                <a onclick="return confirm('Are you sure?')" href="{% url 'chats:toggle_archive' chat.id %}"
+                   class="btn btn-sm btn-outline-warning">
+                    <i class="bi bi-archive"></i> {% if status.is_archived %}Unarchive{% else %}Archive{% endif %}
+                </a>
+                <a onclick="return confirm('Are you sure?')" href="{% url 'chats:toggle_mute' chat.id %}?page_type=chat" class="btn btn-outline-secondary">
+                    <i class="bi bi-bell{% if status.is_muted %}-slash{% endif %}"></i> {% if status.is_muted %}
+                    Unmute{% else %}Mute{% endif %}
+                </a>
+                {% checking_for_message_existence chat request.user as message_exists_flag %}
+                {% if message_exists_flag %}
+                <a onclick="return confirm('Are you sure?')" href="{% url 'chats:clear_chat' chat.id %}" class="btn btn-outline-danger">
+                    <i class="bi bi-eye-slash"></i> Clear
+                </a>
+                {% endif %}
+                <a onclick="return confirm('Are you sure?')" href="{% url 'chats:delete_chat' chat.id %}" class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body chat-messages" style="height: 60vh; overflow-y: auto;">
+        {% if page_obj.has_previous %}
+        <div class="text-center mb-3">
+            <a href="?page={{ page_obj.previous_page_number }}"
+               class="btn btn-sm btn-outline-primary load-more-messages">
+                Show previous ({{ page_obj.paginator.per_page }} more)
+            </a>
+        </div>
+        {% endif %}
+{% for message in page_obj %}
+<div class="mb-3 message-container {% if message.sender == request.user %}text-end{% endif %}" id="message-{{ message.id }}">
+    <div class="d-flex {% if message.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %} align-items-start">
+        {% if message.sender != request.user %}
+            <div class="position-relative me-2 img-block">
+                <img src="{{ message.sender.get_avatar_url }}"
+                     class="rounded-circle object-fit-cover w-100 h-100"
+                     alt="{{ message.sender.username }}">
+                <span class="position-absolute top-0 start-100 translate-middle p-1 border-2 border-white rounded-circle
+                      {% if message.sender.is_online %}bg-success{% else %}bg-danger{% endif %}"
+                      style="transform: translate(-50%, -50%) scale(0.8); box-shadow: 0 0 3px rgba(0,0,0,0.2);"></span>
+            </div>
+        {% endif %}
+
+        <div class="position-relative message-container" data-sender-name="{{ message.sender.username }}">
+            <div class="p-3 rounded {% if message.sender == request.user %}bg-primary text-white{% else %}bg-light{% endif %}">
+                <span class="message-text">{{ message.content|urlize|linebreaksbr }}</span>
+
+                {% if message.sender == request.user %}
+                <div class="message-actions position-absolute end-0 top-0 mt-1 me-1">
+                    <button class="btn btn-sm btn-link text-warning edit-message-btn"
+                            data-message-id="{{ message.id }}"
+                            data-content="{{ message.content }}"
+                            title="Edit message">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-link text-danger delete-message-btn"
+                            data-message-id="{{ message.id }}"
+                            title="Delete message">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            <small class="text-muted">
+                {{ message.sender.username }},
+                {{ message.timestamp|timesince }} ago
+                {% if message.edited_at %}
+                <span class="text-muted small">(edited {{ message.edited_at|timesince }} ago)</span>
+                {% endif %}
+            </small>
+        </div>
+
+        {% if message.sender == request.user %}
+            <div class="position-relative ms-2 img-block">
+                <img src="{{ message.sender.get_avatar_url }}"
+                     class="rounded-circle object-fit-cover w-100 h-100"
+                     alt="{{ message.sender.username }}">
+                <span class="position-absolute top-0 start-100 translate-middle p-1 border-2 border-white rounded-circle bg-success"
+                      style="transform: translate(-50%, -50%) scale(0.8); box-shadow: 0 0 3px rgba(0,0,0,0.2);"></span>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<div class="text-center py-5">
+    <i class="bi bi-chat-square-text display-4 text-muted mb-3"></i>
+    <h5>No messages yet</h5>
+    <p class="text-muted">Start the conversation</p>
+</div>
+{% endfor %}
+</div>
+
+        <div class="card-footer">
+            <form id="message-form" class="message-form-container">
+                {% csrf_token %}
+                <div class="form-floating mb-2">
+                    <textarea name="content" class="form-control message-content"
+                              placeholder="Type your message..."
+                              id="messageContent" style="height: 80px" required></textarea>
+                    <label for="messageContent">Type your message...</label>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group" role="group">
+                        <div class="dropdown" id="emojiDropdownContainer">
+                            <button class="btn btn-outline-warning btn-sm dropdown-toggle" type="button"
+                                    id="emojiDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-emoji-smile"></i> Emoji
+                            </button>
+                            <div class="dropdown-menu p-2" aria-labelledby="emojiDropdownBtn"
+                                 style="width: 300px; max-height: 200px; overflow-y: auto;">
+                                <div class="d-flex flex-wrap">
+                                    {% for emoji in emojis %}
+                                        <button type="button" class="btn btn-sm border-0 emoji-option"
+                                                data-emoji="{{ emoji.code }}" title="{{ emoji.description }}"
+                                                style="font-size: 1.2rem; padding: 0.25rem;">
+                                            {{ emoji.code }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-outline-danger btn-sm" id="clear-message">
+                            <i class="bi bi-trash"></i> Clear text
+                        </button>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm" id="submit-message">
+                        <i class="bi bi-send"></i> Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editMessageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="edit-message-form">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <input type="hidden" id="edit-message-id" name="message_id">
+
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="edit-message-content"
+                                  name="content" style="height: 150px; white-space: pre-line" required></textarea>
+                        <label for="edit-message-content">Message text</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="dropdown" id="editEmojiDropdownContainer">
+                            <button class="btn btn-outline-warning btn-sm dropdown-toggle" type="button"
+                                    id="editEmojiDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
+                                    data-bs-auto-close="outside">
+                                <i class="bi bi-emoji-smile"></i> Add Emoji
+                            </button>
+                            <div class="dropdown-menu p-2" aria-labelledby="editEmojiDropdownBtn"
+                                style="width: 300px; max-height: 200px; overflow-y: auto;">
+                                <div class="d-flex flex-wrap">
+                                    {% for emoji in emojis %}
+                                        <button type="button" class="btn btn-sm border-0 edit-emoji-option"
+                                                data-emoji="{{ emoji.code }}" title="{{ emoji.description }}"
+                                                style="font-size: 1.2rem; padding: 0.25rem;">
+                                            {{ emoji.code }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script>
+    window.messagesContent = {
+        {% for message in page_obj %}
+        '{{ message.id }}': `{{ message.content|escapejs }}`{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    };
+    </script>
+
+    {% include "chats/_chat_detail_js.html" %}
+{% endblock %}

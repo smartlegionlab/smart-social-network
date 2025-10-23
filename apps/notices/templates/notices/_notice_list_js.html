@@ -1,0 +1,31 @@
+<script>
+
+    $(document).ready(function() {
+
+        $('.markAsRead').on('click', function(){
+            let notification_id = $(this).data('id');
+            let btn = $(this);
+            btn.remove();
+            let alertDiv = $(`#alert_${notification_id}`);
+            alertDiv.removeClass('alert-primary').addClass('alert-secondary');
+
+            $.ajax({
+                    url: '{% url "notices:notice_read" %}',
+                    type: 'POST',
+                    data: JSON.stringify({
+                        notice_id: notification_id,
+                    }),
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    success: function(result) {
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+        });
+
+        });
+    </script>

@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Report profile{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-flag-fill text-danger me-2"></i>
+            Report Profile
+        </h1>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url 'users:user_detail' profile.username %}" class="btn btn-outline-secondary d-lg-none">
+                <i class="bi bi-arrow-left"></i> {{ profile.full_name }}
+            </a>
+        </div>
+    </div>
+    <hr>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card shadow-lg">
+                    <div class="card-body p-5">
+
+                        <div class="text-center mb-5">
+                            <i class="bi bi-flag-fill text-danger" style="font-size: 2.5rem;"></i>
+                            <h1 class="display-5 fw-bold mt-3">
+                                Report Profile: <span class="text-danger">{{ profile.full_name }}</span>
+                            </h1>
+                            <p class="lead text-muted">Help us keep the community safe by reporting violations</p>
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            {% csrf_token %}
+
+                            <div class="mb-4">
+                                <h4 class="mb-3 fw-semibold border-bottom pb-2">Violation Type</h4>
+                                <div class="ps-3">
+                                    <label for="{{ form.reason.id_for_label }}" class="form-label fs-5">
+                                        {{ form.reason.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.reason }}
+                                    {% if form.reason.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.reason.errors|join:", " }}
+                                        </div>
+                                    {% else %}
+                                        <div class="invalid-feedback">
+                                            Please select a violation type
+                                        </div>
+                                    {% endif %}
+                                    <small class="text-muted">Select the most appropriate violation category</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="mb-3 fw-semibold border-bottom pb-2">Details</h4>
+                                <div class="ps-3">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label fs-5">
+                                        {{ form.description.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.description.errors|join:", " }}
+                                        </div>
+                                    {% else %}
+                                        <div class="invalid-feedback">
+                                            Please provide description of the violation
+                                        </div>
+                                    {% endif %}
+                                    <small class="text-muted">Be as specific as possible. Include dates, times, and any
+                                        relevant context. (Message length 3000 characters).</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-5">
+                                <h4 class="mb-3 fw-semibold border-bottom pb-2">Evidence</h4>
+                                <div class="ps-3">
+                                    <label for="{{ form.image.id_for_label }}" class="form-label fs-5">
+                                        {{ form.image.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="file"
+                                           class="form-control form-control-lg {% if form.image.errors %}is-invalid{% endif %}"
+                                           id="{{ form.image.id_for_label }}" name="{{ form.image.name }}"
+                                           accept="image/*" required>
+                                    {% if form.image.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.image.errors|join:", " }}
+                                        </div>
+                                    {% else %}
+                                        <div class="invalid-feedback">
+                                            Please select an image file as evidence
+                                        </div>
+                                    {% endif %}
+                                    <div class="mt-3 p-3 bg-light rounded-2">
+                                        <h5 class="fs-6 fw-bold">Upload guidelines:</h5>
+                                        <ul class="mb-0">
+                                            <li>Clear screenshots of the violation</li>
+                                            <li>Images must be in JPEG, WEBP or PNG format</li>
+                                            <li>Maximum file size: 5MB</li>
+                                            <li>Ensure usernames and relevant content are visible</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-4">
+                                <a href="{% url 'users:user_detail' profile.username %}"
+                                   class="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                                    <i class="bi bi-x-circle me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-danger btn-lg px-4">
+                                    <i class="bi bi-send-fill me-2"></i>Submit Report
+                                </button>
+                            </div>
+
+                            <div class="alert alert-warning mt-5">
+                                <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Important
+                                </h5>
+                                <p class="mb-0">
+                                    False reports may result in account restrictions. Please ensure your report is
+                                    accurate
+                                    and submitted in good faith. All reports are reviewed by our moderation team.
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+
+
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form.needs-validation');
+            const fileInput = document.getElementById('{{ form.image.id_for_label }}');
+            const reasonSelect = document.getElementById('{{ form.reason.id_for_label }}');
+            const descriptionTextarea = document.getElementById('{{ form.description.id_for_label }}');
+
+            fileInput.addEventListener('change', validateFileInput);
+            reasonSelect.addEventListener('change', validateReason);
+            descriptionTextarea.addEventListener('input', validateDescription);
+
+            function validateFileInput() {
+                if (fileInput.files.length === 0) {
+                    fileInput.classList.add('is-invalid');
+                } else {
+                    fileInput.classList.remove('is-invalid');
+                }
+            }
+
+            function validateReason() {
+                if (reasonSelect.value) {
+                    reasonSelect.classList.remove('is-invalid');
+                }
+            }
+
+            function validateDescription() {
+                if (descriptionTextarea.value.trim()) {
+                    descriptionTextarea.classList.remove('is-invalid');
+                }
+            }
+
+            form.addEventListener('submit', function (event) {
+                let isValid = true;
+
+                if (!reasonSelect.value) {
+                    reasonSelect.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (!descriptionTextarea.value.trim()) {
+                    descriptionTextarea.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                validateFileInput();
+                if (fileInput.files.length === 0) {
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            });
+        });
+    </script>
+
+
+{% endblock %}

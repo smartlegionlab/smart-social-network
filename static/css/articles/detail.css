@@ -1,0 +1,103 @@
+    .article-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #333;
+    }
+
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 2rem 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .article-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .article-content h2,
+    .article-content h3,
+    .article-content h4 {
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .article-content h2 {
+        font-size: 1.8rem;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 0.5rem;
+    }
+
+    .article-content h3 {
+        font-size: 1.5rem;
+    }
+
+    .article-content blockquote {
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 2rem 0;
+        background-color: #f8f9fa;
+        font-style: italic;
+        color: #555;
+    }
+
+    .article-content ul,
+    .article-content ol {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+    }
+
+    .article-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .article-content a {
+        color: #3498db;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .article-content a:hover {
+        color: #2874a6;
+        text-decoration: underline;
+    }
+
+    .article-content code {
+        background-color: #f0f0f0;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-family: monospace;
+    }
+
+    .article-content pre {
+        background-color: #282c34;
+        color: #abb2bf;
+        padding: 1rem;
+        border-radius: 6px;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+    }
+
+    .article-content table {
+        width: 100%;
+        margin: 2rem 0;
+        border-collapse: collapse;
+    }
+
+    .article-content th,
+    .article-content td {
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .article-content th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+
+    .article-content tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}City{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page='references' %}
+{% endblock %}
+
+{% block content %}
+    <h1 class="display-6 text-center">City:</h1>
+    <hr>
+    <div class="container mt-5">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="btn-group btn-group-sm">
+                <a href="{% url "admin_panel:city_list" %}" class="btn btn-secondary"><i
+                        class="bi bi-arrow-left"></i></a>
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            $('#id_name, #id_region').addClass('form-control');
+        });
+    </script>
+{% endblock %}

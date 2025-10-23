@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload image file{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-cloud-arrow-up me-2"></i> Upload image file:
+        </h1>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url 'user_images:user_image_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Images
+            </a>
+        </div>
+    </div>
+    <hr>
+
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>WARNING!</strong> Acceptable formats: PNG, JPG, JPEG, GIF, WEBP. Maximum image size: 5mb.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <hr>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|capfirst }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="btn-group btn-group-sm">
+            <button class="btn btn-success" type="submit">Upload</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            function initImageUploadForm() {
+                $('#id_title, #id_image, #id_description').addClass('form-control');
+
+                $('#id_image').on('change', function () {
+                    if (this.files && this.files[0]) {
+                        const filename = this.files[0].name;
+                        $('#id_title').val(filename.split('.').slice(0, -1).join('.'));
+                    }
+                });
+
+                if ($('#id_image').val()) {
+                    const filename = $('#id_image').val().split('\\').pop();
+                    $('#id_title').val(filename.split('.').slice(0, -1).join('.'));
+                }
+            }
+
+            initImageUploadForm();
+
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) {
+                    initImageUploadForm();
+                }
+            });
+        });
+    </script>
+{% endblock %}

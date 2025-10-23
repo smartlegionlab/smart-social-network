@@ -1,0 +1,66 @@
+{% load reports_tags %}
+
+<div class="figure-img img-thumbnail rounded" style="margin: 5px; box-shadow: 0 0 5px yellow; padding: 20%">
+    {% include 'admin_panel/svg/incognito.html' %}
+</div>
+
+<div class="text-center">
+    <p class="d-inline-block position-relative">
+        <a href="{% url 'users:current_user' %}" class="profile-link text-decoration-none text-primary">
+            <span class="name-wrapper">{{ request.user.full_name }}</span>
+            <sup class="text-warning">Admin</sup>
+        </a>
+    </p>
+</div>
+
+<div class="btn-group-vertical w-100 figure-img img-thumbnail rounded" role="group"
+     style="margin: 5px; box-shadow: 0 0 5px yellow">
+
+    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Admin Panel" href="{% url 'admin_panel:admin_panel' %}"
+       class="btn mb-2 bi-house-door-fill {% if active_page == 'panel' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Admin Panel <sup id="sidebarLogCount"></sup>
+    </a>
+
+    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Profiles"
+       href="{% url 'admin_panel:admin_user_list' %}"
+       class="btn mb-2 bi-people-fill {% if active_page == 'profiles' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Profiles
+    </a>
+
+    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Site Config" href="{% url 'admin_panel:site_config' %}"
+       class="btn mb-2 {% if active_page == 'settings' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        {% if not site_config.has_empty_fields %}
+            <i class="bi bi-gear text-danger"></i>
+            <span class="text-danger">Site Config</span> <sup class="text-danger">!</sup>
+        {% else %}
+            <i class="bi bi-gear"></i> Site Config
+        {% endif %}
+    </a>
+
+    <a data-bs-toggle="tooltip" data-bs-placement="top" title="System Info" href="{% url 'admin_panel:system_info' %}"
+       class="btn mb-2 {% if active_page == 'system' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        <i class="bi bi-cpu"></i>
+        System Info
+    </a>
+
+    <a data-bs-toggle="tooltip" data-bs-placement="top" title="References" href="{% url 'admin_panel:reference_list' %}"
+       class="btn mb-2 {% if active_page == 'references' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        <i class="bi bi-collection"></i>
+        References
+    </a>
+
+    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Articles" href="{% url 'admin_panel:article_list' %}"
+       class="btn mb-2 {% if active_page == 'articles' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        <i class="bi bi-newspaper"></i>
+        Articles
+    </a>
+
+    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Profile Reports"
+       href="{% url 'admin_panel:user_reports' %}"
+       class="btn mb-2 {% if active_page == 'reports' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+        <i class="bi bi-flag-fill"></i>
+        {% get_user_report_count as new_reports_count %}
+        Profile Reports {% if new_reports_count %}<sup>+ {{ new_reports_count }}</sup>{% endif %}
+    </a>
+
+</div>

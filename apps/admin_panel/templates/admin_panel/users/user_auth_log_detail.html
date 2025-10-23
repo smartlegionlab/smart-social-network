@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+
+{% block title %}Authorization Log №{{ log.id }} - {{ log.user.full_name }}{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/users/_user_sidebar.html" with active_page='logs' profile=log.user %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <hr>
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+                <h1 class="h4 mb-0">
+                    <i class="bi bi-clock-history me-2"></i>Authorization Details
+                    {% if log.is_updated %}
+                        <span class="badge bg-success ms-2" title="The data has been updated.">
+                                <i class="bi bi-check-circle-fill me-1"></i>Updated
+                            </span>
+                    {% else %}
+                        <span class="badge bg-secondary ms-2" title="Initial data">
+                                <i class="bi bi-clock-history me-1"></i>Original
+                            </span>
+                    {% endif %}
+                </h1>
+                <small class="text-muted">Log #{{ log.id }} - {{ log.timestamp|date:"d.m.Y H:i:s" }}</small>
+            </div>
+            <div class="btn-group btn-group-sm">
+                <a href="{% url 'admin_panel:admin_user_auth_logs' log.user.id %}"
+                   class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Logs
+                </a>
+                {% if log.ip and log.ip != '127.0.0.1' and log.ip != 'localhost' and not log.is_updated %}
+                    <a id="get-ip-info" href="{% url 'admin_panel:admin_user_auth_refresh_ip_info' log.id %}"
+                       class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Get Ip Info
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-dark border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-person me-2"></i>User Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4 text-muted">Profile:</dt>
+                            <dd class="col-sm-8">
+                                <a href="{% url 'admin_panel:admin_user_detail' log.user.id %}"
+                                   class="text-decoration-none">
+                                    {{ log.user.full_name }}
+                                </a>
+                            </dd>
+
+                            <dt class="col-sm-4 text-muted">Email:</dt>
+                            <dd class="col-sm-8">{{ log.user.email }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-dark border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-geo-alt me-2"></i>Location Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4 text-muted">IP Address:</dt>
+                            <dd class="col-sm-8">
+                                <div class="d-flex align-items-center">
+                                    <span class="font-monospace me-2">{{ log.ip }}</span>
+                                    <button class="btn btn-sm btn-outline-secondary copy-ip" title="Copy to clipboard">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </div>
+                            </dd>
+
+                            <dt class="col-sm-4 text-muted">Location:</dt>
+                            <dd class="col-sm-8">
+                                {% if log.city and log.country %}
+                                    {{ log.city }}, {{ log.region_name|default:log.region }}, {{ log.country }}
+                                {% else %}
+                                    <span class="text-muted">Not available</span>
+                                {% endif %}
+                            </dd>
+
+                            <dt class="col-sm-4 text-muted">Coordinates:</dt>
+                            <dd class="col-sm-8">
+                                {% if log.latitude and log.longitude %}
+                                    <a href="https://www.google.com/maps/search/?api=1&query={{ log.latitude }},{{ log.longitude }}"
+                                       target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                                        {{ log.latitude|floatformat:4 }}, {{ log.longitude|floatformat:4 }}
+                                        <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">Not available</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-dark border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-laptop me-2"></i>Device Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4 text-muted">User Agent:</dt>
+                            <dd class="col-sm-8 text-muted small">{{ log.user_agent }}</dd>
+
+                            <dt class="col-sm-4 text-muted">Device Type:</dt>
+                            <dd class="col-sm-8">
+                                    <span class="badge bg-{% if log.is_mobile %}info{% else %}secondary{% endif %}">
+                                        {% if log.is_mobile %}Mobile{% else %}Desktop{% endif %}
+                                    </span>
+                            </dd>
+
+                            <dt class="col-sm-4 text-muted">Security Flags:</dt>
+                            <dd class="col-sm-8">
+                                {% if log.is_proxy %}
+                                    <span class="badge bg-danger me-1">Proxy/VPN</span>
+                                {% endif %}
+                                {% if log.is_hosting %}
+                                    <span class="badge bg-warning me-1">Hosting</span>
+                                {% endif %}
+                                {% if not log.is_proxy and not log.is_hosting %}
+                                    <span class="badge bg-success">Clean</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-dark border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-wifi me-2"></i>Network Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4 text-muted">Timezone:</dt>
+                            <dd class="col-sm-8">{{ log.timezone|default:"Not available" }}</dd>
+
+                            <dt class="col-sm-4 text-muted">ISP:</dt>
+                            <dd class="col-sm-8">{{ log.isp|default:"Not available" }}</dd>
+
+                            <dt class="col-sm-4 text-muted">Organization:</dt>
+                            <dd class="col-sm-8">{{ log.organization|default:"Not available" }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4 border-0 shadow-sm btn-secondary text-light">
+            <div class="card-header btn-secondary border-secondary d-flex justify-content-between align-items-center"
+                 style="cursor: pointer;"
+                 onclick="toggleRawData(this)">
+                <h5 class="card-title mb-0 text-light">
+                    <i class="bi bi-code me-2"></i>Raw Data
+                </h5>
+                <i class="bi bi-chevron-down collapse-icon"></i>
+            </div>
+            <div class="card-body p-0 collapse" id="rawDataCollapse">
+                    <pre class="m-0 p-3 btn-secondary text-light" style="
+                        max-height: 300px;
+                        overflow: auto;
+                        font-family: 'Courier New', monospace;
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                    ">{{ log_data_json }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .font-monospace {
+            font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        .card {
+            border-radius: 0.5rem;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+
+        dl.row dt {
+            font-weight: normal;
+        }
+
+        dl.row dd {
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            color: #f8f9fa;
+        }
+
+        pre .string {
+            color: #6ea8fe;
+        }
+
+        pre .number {
+            color: #20c997;
+        }
+
+        pre .boolean {
+            color: #d63384;
+        }
+
+        pre .null {
+            color: #fd7e14;
+        }
+
+        pre .key {
+            color: #6f42c1;
+        }
+
+        .collapse {
+            display: none;
+        }
+
+        .collapse.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .collapse-icon {
+            transition: transform 0.3s ease;
+        }
+    </style>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+
+            $('#get-ip-info').on('click', function () {
+                $(this).addClass('disabled');
+            });
+
+            $('.copy-ip').click(function () {
+                var ip = '{{ log.ip }}';
+                navigator.clipboard.writeText(ip).then(function () {
+                    var icon = $(this).find('i');
+                    icon.removeClass('bi-clipboard').addClass('bi-check');
+
+                    setTimeout(function () {
+                        icon.removeClass('bi-check').addClass('bi-clipboard');
+                    }, 1000);
+                }.bind(this));
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const preElement = document.querySelector('pre');
+            if (preElement) {
+                let jsonText = preElement.textContent;
+
+                jsonText = jsonText
+                    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?)/g, function (match) {
+                        let cls = 'string';
+                        if (/:$/.test(match)) {
+                            cls = 'key';
+                        }
+                        return '<span class="' + cls + '">' + match + '</span>';
+                    })
+                    .replace(/\b(true|false)\b/g, '<span class="boolean">$1</span>')
+                    .replace(/\b(null)\b/g, '<span class="null">$1</span>')
+                    .replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+
+                preElement.innerHTML = jsonText;
+            }
+        });
+
+        function toggleRawData(header) {
+            const collapseElement = header.nextElementSibling;
+            const icon = header.querySelector('.collapse-icon');
+
+            if (collapseElement.classList.contains('show')) {
+                collapseElement.classList.remove('show');
+                icon.classList.remove('bi-chevron-up');
+                icon.classList.add('bi-chevron-down');
+            } else {
+                collapseElement.classList.add('show');
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-up');
+            }
+        }
+
+    </script>
+{% endblock %}

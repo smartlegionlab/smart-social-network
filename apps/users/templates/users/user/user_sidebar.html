@@ -1,0 +1,183 @@
+{% load friend_tags %}
+{% load user_files_tags %}
+{% load notices_tags %}
+{% load static %}
+
+<div id="blockAvatar" class="text-center">
+    <figure class="figure">
+        <img src="{{ profile.get_avatar_url }}" class="figure-img img-thumbnail img-fluid rounded" alt="Profile Picture"
+             style="box-shadow: 0 0 5px cornflowerblue">
+        <figcaption class="figure-caption text-center">
+            {% if not profile.is_online %}
+                <strong style="cursor: help" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="This user is currently offline." class="text-danger">
+                    Offline
+                </strong>
+            {% else %}
+                <strong class="text-success">Online
+                </strong>
+            {% endif %}
+        </figcaption>
+    </figure>
+
+    <br>
+
+    {% if is_owner and avatar_setting %}
+        {% include "users/user/_user_avatar_form.html" %}
+    {% endif %}
+</div>
+
+<hr>
+
+<div id="blockMenu">
+    {% if is_owner %}
+        <div class="btn-group-vertical w-100 figure-img img-thumbnail rounded" role="group"
+             style="box-shadow: 0 0 5px #1b9dec">
+
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Profile" href="{% url 'users:current_user' %}"
+               class="btn mb-1 {% if active_page == 'profile' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="bi bi-house-door{% if active_page == 'profile' %}-fill{% endif %}"></i>
+                Profile
+            </a>
+
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Chats" href="{% url 'chats:active_chat_list' %}"
+               class="btn mb-1 {% if active_page == 'chats' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i style="font-size: 18px" class="bi bi-envelope{% if active_page == 'chats' %}-fill{% endif %}"></i>
+                Chats
+            </a>
+
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Friends"
+               href="{% url 'friends:friend_list' %}"
+               class="btn mb-1 {% if active_page == 'friends' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="bi bi-people{% if active_page == 'friends' %}-fill{% endif %}"></i>
+                Friends
+            </a>
+
+            <a href="{% url 'visits:guest_visits' %}"
+               class="btn mb-1 {% if active_page == 'visits' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+               data-bs-toggle="tooltip" data-bs-placement="bottom" title="Who Viewed My Profile?">
+                <i class="bi bi-eye{% if active_page == 'visits' %}-fill{% endif %}"></i>
+                Visits
+            </a>
+
+            <a href="{% url 'notices:notice_list' %}"
+               class="btn mb-1 {% if active_page == 'notices' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+               data-bs-toggle="tooltip" data-bs-placement="bottom" title="Notifications">
+                <i class="bi bi-bell{% if active_page == 'notices' %}-fill{% endif %}"></i>
+                Notifications
+            </a>
+
+            <a href="{% url "users:users_search" %}"
+               class="btn mb-1 {% if active_page == 'search' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+               data-bs-toggle="tooltip" data-bs-placement="bottom" title="Search users">
+                <i class="bi bi-search"></i> Search users
+            </a>
+
+            <a href="{% url "articles:article_list" %}"
+               class="btn mb-1 {% if active_page == 'news' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+               data-bs-toggle="tooltip" data-bs-placement="bottom" title="News">
+                <i class="bi bi-newspaper"></i> News
+            </a>
+
+        </div>
+
+        <div class="btn-group-vertical w-100 figure-img img-thumbnail rounded" role="group"
+             style="box-shadow: 0 0 5px yellow">
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Music" href="{% url "audio_files:audio_file_list" %}"
+               class="btn mb-1 {% if active_page == 'audio' %}btn-warning{% else %}btn-outline-warning{% endif %}"><i
+                    class="bi bi-music-note"></i> Music
+
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Images" href="{% url "user_images:user_image_list" %}"
+               class="btn mb-1 {% if active_page == 'images' %}btn-warning{% else %}btn-outline-warning{% endif %}"><i
+                    class="bi bi-image{% if active_page == 'images' %}-fill{% endif %}"></i> Images
+
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Files" href="{% url "files:doc_list" %}"
+               class="btn mb-1 {% if active_page == 'documents' %}btn-warning{% else %}btn-outline-warning{% endif %}"><i
+                    class="bi bi-file-text{% if active_page == 'documents' %}-fill{% endif %}"></i> Docs
+
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Apps" href="{% url "app_hub:app_list" %}"
+               class="btn mb-1 {% if active_page == 'apps' %}btn-warning{% else %}btn-outline-warning{% endif %}"><i
+                    class="bi bi-menu-app{% if active_page == 'apps' %}-fill{% endif %}"></i> Apps</a>
+
+        </div>
+
+        <div class="btn-group-vertical w-100 figure-img img-thumbnail rounded" role="group"
+             style="box-shadow: 0 0 5px darkred">
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings" href='{% url "users:user_update" %}'
+               class="btn mb-1 {% if active_page == 'settings' %}btn-secondary{% else %}btn-outline-secondary{% endif %}">
+                <i class="bi bi-gear{% if active_page == 'settings' %}-fill{% endif %}"></i> Settings
+            </a>
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Change password"
+               href='{% url "users:password_change" %}'
+               class="btn mb-1 {% if active_page == 'password' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                <i class="bi bi-lock{% if active_page == 'password' %}-fill{% endif %}"></i> Change password
+            </a>
+        </div>
+    {% else %}
+        <div class="btn-group-vertical w-100 figure-img img-thumbnail rounded" role="group"
+             style="box-shadow: 0 0 5px cornflowerblue">
+
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Profile" href="{% url 'users:current_user' %}"
+               class="btn mb-1 btn-outline-primary">
+                <i class="bi bi-house-door{% if active_page == 'profile' %}-fill{% endif %}"></i>
+                My Profile
+            </a>
+
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ profile.full_name }}"
+               href="{% url 'users:user_detail' profile.username %}"
+               class="btn mb-1 {% if active_page == 'profile' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="bi bi-person-fill"></i> {{ profile.full_name }}
+            </a>
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Send Message"
+               href="{% url 'chats:start_private_chat' profile.id %}"
+               class="btn mb-1 {% if active_page == 'messages' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                <i class="bi bi-chat-left-dots-fill"></i> Send Message
+            </a>
+            <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Friends: {{ profile.full_name }}"
+               href="{% url 'friends:public_user_friends' profile.username %}"
+               class="btn mb-1 {% if active_page == 'friends' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="bi bi-people-fill"></i> Friends
+            </a>
+        </div>
+
+        <div class="btn-group-vertical w-100 figure-img img-thumbnail rounded" role="group"
+             style="box-shadow: 0 0 5px yellow">
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Music"
+               href="{% url "audio_files:user_audio_file_list" profile.username %}"
+               class="btn mb-1 {% if active_page == 'audio' %}btn-warning{% else %}btn-outline-warning{% endif %}"><i
+                    class="bi bi-music-note-list"></i> Music</a>
+
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Images"
+               href="{% url "user_images:public_image_list" profile.username %}"
+               class="btn mb-1 {% if active_page == 'images' %}btn-warning{% else %}btn-outline-warning{% endif %}"><i
+                    class="bi bi-images"></i> Images</a>
+
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Files"
+               href="{% url "files:user_doc_list" profile.username %}"
+               class="btn mb-1 {% if active_page == 'documents' %}btn-warning{% else %}btn-outline-warning{% endif %}"><i
+                    class="bi bi-folder-check"></i> Docs</a>
+        </div>
+
+        <div class="btn-group-vertical w-100 figure-img img-thumbnail rounded" role="group"
+             style="box-shadow: 0 0 5px darkred">
+            {% friendship_test request.user.id profile.id as is_friend %}
+            {% if is_friend %}
+                <a onclick="return confirm('Are you sure?')" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove from friends"
+                    href="{% url 'friends:friend_delete' profile.id %}"
+                    class="btn mb-1 btn-outline-danger"><i
+                            class="bi bi-people-fill"></i> Remove from friends</a>
+            {% else %}
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Add to friends"
+               href="{% url 'friends:friend_request_send' profile.id %}"
+               class="btn mb-1 btn-outline-primary"><i
+                    class="bi bi-people-fill"></i> Add to friends</a>
+            {% endif %}
+
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Report profile"
+               href="{% url 'reports:user_report' profile.username %}"
+               class="btn mb-1 {% if active_page == 'report' %}btn-danger{% else %}btn-outline-danger{% endif %}"><i
+                    class="bi bi-flag-fill"></i> Report</a>
+
+        </div>
+    {% endif %}
+</div>

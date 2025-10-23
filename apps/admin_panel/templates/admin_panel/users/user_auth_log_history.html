@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile Authentication History{% endblock %}
+
+{% block css %}
+    <link href="{% static 'vendors/datatables/css/datatables.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/users/_user_sidebar.html" with active_page='logs' %}
+{% endblock %}
+
+
+{% block content %}
+
+    <h1 class="text-center display-6">Profile Authentication History: <sup>{{ profile.auth_logs.count }}</sup></h1>
+    <hr>
+    <div class="btn-group btn-group-sm">
+        {% with log_count=profile.auth_logs.count %}
+            <a onclick="return confirm('Are you sure? All entries will be deleted permanently. Entries will be deleted: {{ log_count }}')"
+               href="{% url "admin_panel:admin_user_auth_log_all_delete" profile.id %}" type="button"
+               class="btn btn-outline-danger{% if not log_count %} disabled{% endif %}" data-bs-toggle="tooltip"
+               data-bs-placement="top" title="Delete all ({{ log_count }})">
+                <i class="bi bi-trash"></i> Delete all <sup>{{ log_count }}</sup>
+            </a>
+        {% endwith %}
+
+    </div>
+    <hr>
+    <div class="table-responsive">
+        <table id="logsTable" class="table table-bordered table-striped">
+            <thead>
+            <tr class="table-primary">
+                <th scope="col">IP</th>
+                <th scope="col">User Agent</th>
+                <th scope="col">Date</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+
+    <script src="{% static 'vendors/datatables/js/datatables.min.js' %}"></script>
+
+    <script>
+        var deleteUrl = "{% url 'admin_panel:admin_user_auth_log_delete' 0 %}";
+        var detailUrl = "{% url 'admin_panel:admin_user_auth_log_detail' 0 %}";
+
+        $(document).ready(function () {
+            $('#logsTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{% url 'admin_panel:api_user_auth_logs' profile.id %}",
+                    "type": "GET",
+                    "data": function (d) {
+                        return {
+                            draw: d.draw,
+                            start: d.start,
+                            length: d.length,
+                            search: d.search.value,
+                            order_column: d.order[0]?.column,
+                            order_dir: d.order[0]?.dir
+                        };
+                    }
+                },
+                "order": [[2, "desc"]],
+                "columns": [
+                    {"data": "ip_address"},
+                    {"data": "user_agent"},
+                    {"data": "timestamp"},
+                    {
+                        "data": null,
+                        "orderable": false,
+                        "render": function (data, type, row) {
+                            let logId = row.id;
+                            return `
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"
+                           href="${detailUrl.replace('0', logId)}"
+                           class="btn btn-outline-info">
+                            <i class="bi bi-eye-fill"></i>
+                        </a>
+                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Detail"
+                           href="${deleteUrl.replace('0', logId)}"
+                           class="btn btn-outline-danger"
+                           onclick="return confirm('Are you sure you want to delete?');">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </div>
+                `;
+                        }
+                    }
+                ],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search...",
+                    lengthMenu: "Show _MENU_ entries",
+                    paginate: {
+                        previous: "Previous",
+                        next: "Next"
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile.full_name }}'s profile{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/users/_user_sidebar.html" with active_page="detail" %}
+{% endblock %}
+
+{% block content %}
+    <hr>
+    <h1 class="text-center display-6">{{ profile.full_name }} <sup>{% if profile.is_active %}<span class="text-success">Active</span>{% else %}<span class="text-danger">Block</span>{% endif %}</sup></h1>
+    <hr>
+    <div class="border p-3 mb-3">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Name:</strong> <span
+                    class="text-primary">{{ profile.first_name }}</span></li>
+            <li class="list-group-item"><strong>Last name:</strong> <span
+                    class="text-primary">{{ profile.last_name }}</span></li>
+            <li class="list-group-item">
+                <strong>Gender:</strong>
+                <span class="text-primary">
+                            {% if profile.gender == 'M' %}
+                                <i style="cursor: help" data-bs-toggle="tooltip" data-bs-placement="top" title="Male"
+                                   class="bi bi-gender-male"></i>
+                            {% elif profile.gender == 'F' %}
+                                <i style="cursor: help" data-bs-toggle="tooltip" data-bs-placement="top" title="Female"
+                                   class="bi bi-gender-female"></i>
+                            {% else %}
+                                <i style="cursor: help" data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Not specified" class="bi bi-patch-question-fill"></i>
+                            {% endif %}
+                        </span>
+            </li>
+            <li class="list-group-item"><strong>About me:</strong> <span
+                    class="text-primary post-text">{{ profile.about_me }}</span></li>
+            <li class="list-group-item"><strong>Date of Birth:</strong> <span
+                    class="text-primary">{{ profile.date_of_birth|date:"d.m.Y" }}</span></li>
+            <li class="list-group-item"><strong>Age:</strong> <span
+                    class="text-primary">{{ profile.age_with_suffix }}</span></li>
+            <li class="list-group-item"><strong>Email:</strong> <span class="text-primary">{% if profile.email %}
+                {{ profile.email }}{% endif %}</span></li>
+            <li class="list-group-item">
+                <strong>Telegram ID:</strong>
+                <span class="text-primary">
+                                {% if profile.telegram_chat_id %}
+                                    {{ profile.telegram_chat_id }}
+                                    {% else %}{% if is_owner %}
+                                        <span class="text-danger">
+                                            <strong>Attention! </strong>
+                                            <a href="{% url "users:user_update" %}">Add</a>
+                                            your
+                                            <a target="_blank" rel="noopener noreferrer" href="https://t.me/my_id_bot">
+                                                Telegram chat ID</a>. It is needed to restore access to the account, as well as for two-factor authentication!
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            </span>
+            </li>
+            <li class="list-group-item">
+                <strong>Two-factor authentication:</strong>
+                <span class="text-primary">
+                                {% if profile.is_2fa_enabled %}
+                                    <i class="bi bi-check-circle text-success"></i>
+                                {% else %}
+                                    <i class="bi bi-x-circle text-danger"></i>
+                                {% endif %}
+                            </span>
+            </li>
+            <li class="list-group-item"><strong>Account updated:</strong> <span
+                    class="text-primary">{{ profile.updated_at|date:"d.m.Y H:i:s" }}</span></li>
+            <li class="list-group-item"><strong>Account created:</strong> <span
+                    class="text-primary">{{ profile.created_at|date:"d.m.Y H:i:s" }}</span></li>
+        </ul>
+    </div>
+{% endblock %}

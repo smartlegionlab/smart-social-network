@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile Settings{% endblock %}
+
+{% block css %}
+    <link href="{% static 'vendors/selectize/selectize.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-gear me-2"></i> Profile Settings:
+        </h1>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url 'users:user_detail' profile.username %}" class="btn btn-outline-secondary d-lg-none">
+                <i class="bi bi-arrow-left"></i> {{ profile.full_name }}
+            </a>
+        </div>
+    </div>
+    <hr>
+
+    <div class="alert alert-warning" role="alert">
+        <p>Attention! Activate two-factor authentication only if you have the correct <a target="_blank" rel="noopener noreferrer"
+                                                                                         href="https://t.me/my_id_bot">telegram
+            chat id</a> and are subscribed to the <a target="_blank" rel="noopener noreferrer" href="{% if site_config.telegram_bot_url %}{{ site_config.telegram_bot_url }}{% else %}#{% endif %}">official
+            bot.</a></p>
+        <p class="text-danger">Otherwise, you will not receive a temporary code to enter the application!</p>
+    </div>
+    <hr>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|capfirst }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-success">Save</button>
+    </form>
+    <hr>
+    <p class="text-center lead">You can also <a href="{% url "users:user_delete" %}"
+                                                onclick="return confirm('Do you really want to delete your profile? Think carefully before deleting, as it will be impossible to restore the profile')"
+                                                class="text-danger">delete</a> your profile.</p>
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'vendors/selectize/selectize.min.js' %}"></script>
+
+
+    <script>
+        $(document).ready(function () {
+
+            $('#id_email, #id_first_name, #id_last_name, #id_phone, #id_about_me, #id_telegram_chat_id, #id_date_of_birth, #id_username').addClass('form-control');
+            $('#id_gender').addClass('form-select');
+            $('#id_city').removeClass('form-control').selectize({
+                respect_word_boundaries: false,
+            });
+        });
+    </script>
+{% endblock %}

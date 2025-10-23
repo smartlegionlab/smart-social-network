@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Apps{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-terminal me-2"></i> Apps:
+        </h1>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url 'users:user_detail' profile.username %}" class="btn btn-outline-secondary d-lg-none">
+                <i class="bi bi-arrow-left"></i> {{ profile.full_name }}
+            </a>
+        </div>
+    </div>
+    <hr>
+
+    <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+
+            <a class="text-decoration-none" href="{% url "app_hub:smart_password_manager:smart_password_list" %}">
+                <span class="text-primary">
+                    <i class="bi bi-google-play"></i>
+                    <i class="bi bi-window-sidebar"></i>
+                    Smart Password Manager
+                    <sup>Web Application</sup>
+                </span>
+            </a>
+
+            <div class="btn-group btn-group-sm">
+                <a class="btn btn-secondary" href="{% url "app_hub:smart_password_manager:smart_password_list" %}">
+                    <i class="bi bi-arrow-bar-right"></i>
+                    Start
+                </a>
+                <a target="_blank" rel="noopener noreferrer" class="btn btn-info" href="https://github.com/smartlegionlab/smartpasslib/">
+                    <i class="bi bi-git"></i>
+                    Help
+                </a>
+            </div>
+        </li>
+    </ul>
+
+{% endblock %}

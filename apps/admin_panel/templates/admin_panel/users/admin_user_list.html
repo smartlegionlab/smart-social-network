@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profiles{% endblock %}
+
+{% block css %}
+    <link href="{% static 'vendors/datatables/css/datatables.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page='profiles' %}
+{% endblock %}
+
+
+{% block content %}
+
+    <h2 style="text-align: center" class="display-6">Profiles: <sup>{{ profiles.count }}</sup></h2>
+    <hr>
+    <div class="btn-group btn-group-sm" role="group" aria-label="Import/Export buttons">
+        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Create new profile"
+           class="btn btn-sm btn-success mt-2" href="{% url "admin_panel:admin_user_create" %}">+ <i
+                class="bi bi-person-fill"></i></a>
+        <a data-bs-toggle="tooltip" data-bs-placement="top"
+           title="Import profiles (json/csv)" class="btn btn-sm btn-secondary mt-2"
+           href="{% url "admin_panel:admin_import_users" %}"><i class="bi bi-upload"></i> Import</a>
+        <a onclick="return confirm('Are you sure?')" data-bs-toggle="tooltip" data-bs-placement="top"
+           title="Download profiles (csv)" href="{% url 'admin_panel:admin_export_users' 'csv' %}"
+           class="btn btn-sm btn-outline-primary mt-2">
+            <i class="bi bi-download"></i> CSV
+        </a>
+        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Download profiles (json)"
+           onclick="return confirm('Are you sure?')" href="{% url 'admin_panel:admin_export_users' 'json' %}"
+           class="btn btn-sm btn-outline-primary mt-2">
+            <i class="bi bi-download"></i> JSON
+        </a>
+    </div>
+    <hr>
+    <div class="table-responsive">
+        <table id="profilesTable" class="table table-bordered table-striped">
+            <thead>
+            <tr class="table-primary">
+                <th>Photo</th>
+                <th>Full Name</th>
+                <th>Is Online</th>
+                <th>City</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Date Of Birth</th>
+                <th>Age</th>
+                <th>Phone</th>
+                <th>Telegram ID</th>
+                <th>2FA</th>
+                <th>Is active</th>
+                <th>Is test</th>
+                <th>Admin</th>
+                <th>Last Activity</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'vendors/datatables/js/datatables.min.js' %}"></script>
+
+
+    <script>
+
+        $(document).ready(function () {
+            $('#profilesTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/admin-panel/api/users/',
+                    type: 'GET',
+                    data: function (d) {
+                        var order = d.order && d.order.length > 0 ? d.order[0] : null;
+
+                        return {
+                            draw: d.draw,
+                            start: d.start,
+                            length: d.length,
+                            'search[value]': d.search.value,
+                            'order[0][column]': order ? order.column : null,
+                            'order[0][dir]': order ? order.dir : 'asc'
+                        };
+                    },
+                    error: function (xhr, error, thrown) {
+                        console.error('AJAX error:', error, thrown);
+                        alert('There was an error loading the data. Please try again later..');
+                    }
+                },
+                columns: [
+                    {
+                        data: 'avatar_url',
+                        render: function (data, type, row) {
+                            return `<a href="/admin-panel/users/${row.id}/detail/"><img src="${data}" style="height: 50px; margin-right: 5px" class="figure-img img-fluid rounded" alt="Photo"></a>`;
+                        },
+                        orderable: false
+                    },
+                    {
+                        data: 'full_name',
+                        render: function (data, type, row) {
+                            return `<a href="/admin-panel/users/${row.id}/detail/">${data}</a>`;
+                        },
+                        name: 'full_name'
+                    },
+                    {
+                        data: 'is_online',
+                        render: function (data) {
+                            return data ? '<i class="bi bi-circle-fill text-success" title="Online"></i>' :
+                                '<i class="bi bi-circle-fill text-danger" title="Offline"></i>';
+                        },
+                        name: 'last_activity'
+                    },
+                    {
+                        data: 'city_name',
+                    },
+                    {
+                        data: 'gender',
+                    },
+                    {
+                        data: 'email',
+                    },
+                    {
+                        data: 'date_of_birth',
+                    },
+                    {
+                        data: 'age',
+                    },
+                    {
+                        data: 'phone',
+                    },
+                    {
+                        data: 'telegram_chat_id',
+                    },
+                    {
+                        data: 'is_2fa_enabled',
+                        render: function (data) {
+                            return data ? '<i class="bi bi-check-circle text-success" title="2FA Enabled"></i>' :
+                                '<i class="bi bi-x-circle text-danger" title="2FA Disabled"></i>';
+                        },
+                        name: 'is_2fa_enabled'
+                    },
+                    {
+                        data: 'is_active',
+                        render: function (data) {
+                            return data ? '<i class="bi bi-check-circle text-success" title="Active"></i>' :
+                                '<i class="bi bi-x-circle text-danger" title="Inactive"></i>';
+                        },
+                    },
+                    {
+                        data: 'is_test',
+                        render: function (data) {
+                            return data ? '<i class="bi bi-check-circle text-success" title="Is test"></i>' :
+                                '<i class="bi bi-x-circle text-danger" title="Is test"></i>';
+                        },
+                    },
+                    {
+                        data: 'is_superuser',
+                        render: function (data) {
+                            return data ? '<i class="bi bi-check-circle text-success" title="Admin"></i>' :
+                                '<i class="bi bi-x-circle text-danger" title="Not Admin"></i>';
+                        },
+                    },
+                    {
+                        data: 'last_activity',
+                    },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `
+                        <div class="btn-group btn-group-sm" role="group">
+                            <a href="/admin-panel/users/${data}/detail/" class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile"><i class="bi bi-eye-fill"></i></a>
+                            <a href="/admin-panel/users/${data}/update/" class="btn btn-outline-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile settings"><i class="bi bi-gear"></i></a>
+                            <a href="/admin-panel/auth-logs/${data}/history/" class="btn btn-outline-secondary d-flex align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile auth history">
+                                <i class="bi bi-clock-history me-1"></i>
+                            </a>
+                            <a href="/admin-panel/users/${data}/delete/" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete?');" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete profile"><i class="bi bi-trash-fill"></i></a>
+                            <a href="/admin-panel/users/${data}/block/" class="btn ${row.is_active ? 'bi-lock btn-outline-warning' : 'bi-unlock btn-success'}" onclick="return confirm('${row.is_active ? 'Block profile' : 'Unblock profile'}?');" data-bs-toggle="tooltip" data-bs-placement="top" title="${row.is_active ? 'Block profile' : 'Unblock profile'}"></a>
+                        </div>
+                    `;
+                        },
+                        orderable: false
+                    }
+                ],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search...",
+                    lengthMenu: "Show _MENU_ entries",
+                    paginate: {
+                        previous: "Previous",
+                        next: "Next"
+                    }
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

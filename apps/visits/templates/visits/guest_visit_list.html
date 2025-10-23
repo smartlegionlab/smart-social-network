@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load friend_tags %}
+{% load static %}
+
+{% block title %}Who visited My Profile?{% endblock %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-eye-fill me-2"></i>
+            Visited My Profile
+        </h1>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url 'users:user_detail' profile.username %}" class="btn btn-outline-secondary d-lg-none">
+                <i class="bi bi-arrow-left"></i> {{ profile.full_name }}
+            </a>
+        </div>
+    </div>
+    <hr>
+
+    <div class="btn-group btn-group-sm">
+        <a href="{% url "visits:my_visits" %}" class="btn btn-outline-primary">
+            <i class="bi bi-eye-fill"></i> My visits <sup>{{ user_visit_count    }}</sup>
+        </a>
+        <a onclick="return confirm('Are you sure?')" href="{% url "visits:clear_guests_visits" %}"
+           class="btn btn-outline-danger{% if not visit_count %} disabled{% endif %}">
+            <i class="bi bi-trash-fill"></i> Clear
+            <sup>{{ visit_count }}</sup>
+        </a>
+    </div>
+    <hr>
+    {% if visit_count %}
+        <ul class="list-group">
+            {% for visit in page_obj %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a class="text-decoration-none" href="{% url "users:user_detail" visit.visitor.username %}"><img
+                            src="{{ visit.visitor.get_avatar_url }}" style="height: 50px"
+                            class="figure-img img-thumbnail img-fluid rounded" alt="Photo">
+                        {{ visit.visitor.full_name }}{% if not is_owner %}
+                            {% friendship_test current_user.id visit.visitor.id as is_friend %}{% if is_friend %}
+                                <sup><span class="text-success">Friend</span></sup>{% endif %}{% endif %} <sup>
+                            {% if visit.visitor.is_online %}
+                                <i data-bs-toggle="tooltip" data-bs-placement="top" title="Online"
+                                   class="bi bi-circle-fill text-success"></i>{% else %}
+                                <i data-bs-toggle="tooltip" data-bs-placement="top" title="Offline"
+                                   class="bi bi-circle-fill text-danger"></i>{% endif %}</sup>
+                        <sub class="text-secondary">{{ visit.timestamp|timesince }} ago</sub>
+                    </a>
+                    <div class="btn-group btn-group-sm">
+                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Delete visit"
+                           onclick="return confirm('Are you sure?')" class="btn btn-outline-danger"
+                           href="{% url "visits:remove_visit" visit.id %}"><i class="bi bi-trash-fill"></i></a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        {% if page_obj.has_other_pages %} {% include "paginator.html" %} {% endif %}
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            No one has visited your profile yet
+        </div>
+    {% endif %}
+
+{% endblock %}

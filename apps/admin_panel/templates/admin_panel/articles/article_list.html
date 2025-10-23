@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Article List{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page='articles' %}
+{% endblock %}
+
+{% block content %}
+
+    <h2 class="display-6 text-center">Article List: <sup>{{ all_count }}</sup></h2>
+    <hr>
+    <div class="btn-group btn-group-sm">
+        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Add new Article"
+           href="{% url "admin_panel:article_create" %}" class="btn btn-outline-success">+ Add</a>
+        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Articles" href="{% url "articles:article_list" %}"
+           class="btn btn-outline-secondary">Articles <sup>{{ published_count }}</sup></a>
+        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Delete all articles"
+           onclick="return confirm('Are you sure?')" href="{% url "admin_panel:articles_clear" %}"
+           class="btn bi-trash btn-outline-danger{% if not all_count %} disabled {% endif %}">Delete All
+            <sup>{{ all_count }}</sup></a>
+    </div>
+    <hr>
+    {% if articles.exists %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr class="table-primary">
+                    <th>Title</th>
+                    <th>Slug</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Published At</th>
+                    <th>Readers</th>
+                    <th>Style</th>
+                    <th>Views</th>
+                    <th>Status</th>
+                    <th>Likes</th>
+                    <th>Comments</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for article in page_obj %}
+                    <tr>
+                        <td><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></td>
+                        <td>{{ article.slug }}</td>
+                        <td>{{ article.created_at|date:"d.m.Y H:i:s" }}</td>
+                        <td>{{ article.updated_at|date:"d.m.Y H:i:s" }}</td>
+                        <td>{{ article.published_at|date:"d.m.Y H:i:s" }}</td>
+                        <td>{{ article.readers.count }}</td>
+                        <td class="text-{{ article.style_class }}">{{ article.style_class }}</td>
+                        <td>{{ article.total_views }}</td>
+                        <td>{{ article.status }}</td>
+                        <td>{{ article.likes.count }}</td>
+                        <td>{{ article.comments.count }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Article detail"
+                                   href="{% url "articles:article_detail" article.slug %}"
+                                   class="btn btn-primary bi-eye-fill"></a>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Update article"
+                                   href="{% url "admin_panel:article_edit" article.pk %}" class="btn btn-warning"><i
+                                        class="bi bi-pencil"></i></a>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Delete article"
+                                   onclick="return confirm('Are you sure?')"
+                                   href="{% url "admin_panel:article_delete" article.pk %}" class="btn btn-danger"><i
+                                        class="bi bi-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if page_obj.has_other_pages %} {% include "paginator.html" %} {% endif %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Not found...
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+{% endblock %}

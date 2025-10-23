@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load article_tags %}
+{% load static %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block main %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'articles:article_list' %}">Articles</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ article.title|truncatechars:30 }}</li>
+                </ol>
+            </nav>
+
+            <h1 class="display-5 fw-bold mb-3">{{ article.title }}</h1>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-4 text-muted">
+                <span><i class="bi bi-calendar me-1"></i> {{ article.published_at|date:"F j, Y" }}</span>
+                <span><i class="bi bi-clock me-1"></i> {{ article.reading_time }}</span>
+                <span><i class="bi bi-eye me-1"></i> {{ article.total_views }}</span>
+                <span><i class="bi bi-people me-1"></i> {{ article.readers.count }} readers</span>
+                <span><i class="bi bi-heart me-1"></i> {{ article_like_count }} liked</span>
+            </div>
+
+            {% if article.image %}
+            <div class="mb-4">
+                <img src="{{ article.image.url }}"
+                     alt="{{ article.title }}"
+                     class="img-fluid rounded-3 shadow-sm w-100 object-fit-cover"
+                     style="max-height: 60vh; object-fit: cover;">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12">
+
+            <article class="article-content mb-4 rounded" style="box-shadow: 0 0 5px white; padding: 10px;">
+                {{ article.content|safe }}
+            </article>
+
+            <hr class="my-5">
+
+            <div class="d-flex justify-content-between align-items-center text-muted mb-5">
+                <div>
+                    <i class="bi bi-calendar me-1"></i> Published on {{ article.published_at|date:"F j, Y" }}
+                </div>
+                <div>
+                    <button class="btn btn-link text-decoration-none p-0 like-button"
+                            data-article-id="{{ article.id }}">
+                        {% check_article_liked_by request.user article as is_liked %}
+                        <i class="bi like-icon text-danger {% if is_liked %}bi-heart-fill{% else %}bi-heart{% endif %} me-1"></i>
+                        <span class="like-count fw-bold">{{ article_like_count }}</span>
+                    </button>
+                </div>
+            </div>
+            <hr class="my-5">
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12">
+
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <form id="comment-form" method="post" action="{% url "articles:article_comment_create" article.id %}">
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                    <textarea name="content" class="form-control comment-content"
+                              placeholder="Your comment" id="commentContent"
+                              style="height: 100px" required></textarea>
+                            <label for="commentContent">Your comment</label>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <div class="dropdown" id="commentEmojiDropdownContainer">
+                                    <button class="btn btn-outline-warning btn-sm dropdown-toggle" type="button"
+                                            id="commentEmojiDropdownBtn" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                        <i class="bi bi-emoji-smile"></i>
+                                    </button>
+                                    <div class="dropdown-menu p-2" aria-labelledby="commentEmojiDropdownBtn"
+                                         style="width: 300px; max-height: 200px; overflow-y: auto;"
+                                         id="commentEmojiDropdownMenu">
+                                        <div class="d-flex flex-wrap">
+                                            {% for emoji in emojis %}
+                                                <button type="button" class="btn btn-sm border-0 comment-emoji-btn"
+                                                        data-emoji="{{ emoji.code }}" title="{{ emoji.description }}"
+                                                        style="font-size: 1.2rem; padding: 0.25rem;">
+                                                    {{ emoji.code }}
+                                                </button>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-outline-danger btn-sm" id="clear-comment">
+                                    <i class="bi bi-trash"></i> Clear
+                                </button>
+                            </div>
+
+                            <button type="submit" class="btn btn-sm btn-primary" id="submit-comment" disabled>
+                                <i class="bi bi-send"></i> Send
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="comments-list">
+                {% for comment in page_obj %}
+                    <div class="card mb-3 comment" data-comment-id="{{ comment.id }}"
+                         style="box-shadow: 0 0 5px #41464b">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <a href="{% url "users:user_detail" comment.author.username %}">
+                                    <img src="{{ comment.author.get_avatar_url }}"
+                                         class="rounded-circle me-3 object-fit-cover"
+                                         width="40" height="40"
+                                         alt="{{ comment.author.full_name }}">
+                                     </a>
+                                <div class="flex-grow-1">
+                                <a style="text-decoration: none" href="{% url "users:user_detail" comment.author.username %}">
+                                    <h6 class="mb-0">{{ comment.author.full_name }}</h6>
+                                    </a>
+                                    <small class="text-muted">Created {{ comment.created_at|timesince }} ago{% if comment.is_edit %} | Edited {{ comment.edited_at|timesince }} ago{% endif %}</small>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+
+                                    <button id="like-btn-{{ comment.id }}"
+                                            class="btn btn-like {% if comment.is_liked %}liked{% endif %}"
+                                            data-comment-id="{{ comment.id }}"
+                                            title="{% if comment.is_liked %}Unlike{% else %}Like{% endif %}">
+                                        <i class="bi {% if comment.is_liked %}bi-heart-fill{% else %}bi-heart{% endif %} like-icon"></i>
+                                        <sup id="like-count-{{ comment.id }}">{{ comment.like_count }}</sup>
+                                    </button>
+                                    {% if comment.author == request.user or request.user.is_superuser %}
+                                        {% if comment.author == request.user %}
+                                            <button class="btn btn-sm btn-outline-warning edit-comment"
+                                                    data-comment-id="{{ comment.id }}"
+                                                    data-bs-toggle="tooltip" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        {% endif %}
+                                        <button class="btn btn-sm btn-outline-danger delete-comment"
+                                                data-comment-id="{{ comment.id }}"
+                                                data-bs-toggle="tooltip" title="Delete">
+                                            <i class="bi bi-trash"></i> {% if request.user.is_superuser %}<sup class="text-warning">admin</sup>{% endif %}
+                                        </button>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                            <hr>
+                            <p class="mb-0 comment-content" style="white-space: pre-line">{{ comment.content|urlize|linebreaksbr }}</p>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="alert alert-primary">No comments yet</div>
+                {% endfor %}
+            </div>
+            {% if page_obj.has_other_pages %}
+                <div class="mt-5">
+                    {% include "paginator.html" %}
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="editCommentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit comment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="edit-comment-form">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <input type="hidden" id="edit-comment-id" name="comment_id">
+
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="edit-comment-content"
+          name="content" style="height: 150px; white-space: pre-line" required></textarea>
+                        <label for="edit-comment-content">Comment text</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="dropdown" id="editCommentEmojiDropdownContainer">
+                            <button class="btn btn-outline-warning btn-sm dropdown-toggle" type="button"
+                                    id="editCommentEmojiDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
+                                    data-bs-auto-close="outside">
+                                <i class="bi bi-emoji-smile"></i> Add Emoji
+                            </button>
+                            <div class="dropdown-menu p-2" aria-labelledby="editCommentEmojiDropdownBtn"
+                                style="width: 300px; max-height: 200px; overflow-y: auto;">
+                                <div class="d-flex flex-wrap">
+                                    {% for emoji in emojis %}
+                                        <button type="button" class="btn btn-sm border-0 edit-comment-emoji-btn"
+                                                data-emoji="{{ emoji.code }}" title="{{ emoji.description }}"
+                                                style="font-size: 1.2rem; padding: 0.25rem;">
+                                            {{ emoji.code }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="save-comment-changes">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    {% include "articles/_article_detail_js.html" %}
+{% endblock %}

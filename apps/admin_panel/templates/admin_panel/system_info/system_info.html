@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}System Information{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page='system' %}
+{% endblock %}
+
+{% block content %}
+
+    <h2 style="text-align: center" class="display-6">System Information: </h2>
+    <hr>
+
+    <ul class="list-group">
+        <li class="list-group-item"><strong>System boot time:</strong> <span id="boot_time"
+                                                                             class="text-success">{{ system_info_master.info.boot_time_str }}</span>
+        </li>
+        <li class="list-group-item"><strong>CPU number of physical cores:</strong> <span id="cpu_count_real"
+                                                                                         class="text-success">{{ system_info_master.cpu.count_real }}</span>
+        </li>
+        <li class="list-group-item"><strong>CPU number of logical cores:</strong> <span id="cpu_count"
+                                                                                        class="text-success">{{ system_info_master.cpu.count }}</span>
+        </li>
+        <li class="list-group-item"><strong>CPU load system wide:</strong> <span id="cpu_percent"
+                                                                                 class="text-success">{{ system_info_master.cpu.percent_str }}</span>
+        </li>
+        <li class="list-group-item"><strong>Memory (total):</strong> <span id="memory_total"
+                                                                           class="text-success">{{ system_info_master.memory.total_str }}</span>
+        </li>
+        <li class="list-group-item"><strong>Memory (available):</strong> <span id="memory_available"
+                                                                               class="text-success">{{ system_info_master.memory.available_str }}</span>
+        </li>
+        <li class="list-group-item"><strong>Memory (free):</strong> <span id="memory_free"
+                                                                          class="text-success">{{ system_info_master.memory.free_str }}</span>
+        </li>
+        <li class="list-group-item"><strong>Memory (in use):</strong> <span id="memory_used"
+                                                                            class="text-success">{{ system_info_master.memory.used_str }}</span>
+        </li>
+        <li class="list-group-item"><strong>Memory (percentage of load):</strong> <span id="memory_percent"
+                                                                                        class="text-success">{{ system_info_master.memory.percent_str }}</span>
+        </li>
+        <li class="list-group-item"><strong>Disk: </strong> <span id="disk_data" class="text-primary">Total: <span
+                class="text-success" id="disk_data_total">{{ system_info_master.disk.system_usage.total }}</span> | Busy: <span
+                class="text-success" id="disk_data_used">{{ system_info_master.disk.system_usage.used }}</span> | Available: <span
+                class="text-success" id="disk_data_free">{{ system_info_master.disk.system_usage.free }}</span> | Utilization percentage: <span
+                class="text-success"
+                id="disk_data_percent">{{ system_info_master.disk.system_usage.percent }}</span></span></li>
+    </ul>
+
+    <hr>
+
+    <button type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Get system info"
+            class="btn btn-secondary" id="reload"><i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            function updateSystemInfo() {
+                $('#reload').html('<div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">In progress...</span></div>').addClass('disabled');
+                $.ajax({
+                    url: `/admin-panel/system-info/update/`,
+                    method: 'GET',
+                    success: function (data) {
+                        $('#boot_time').text(data['boot_time']);
+                        $('#cpu_count').text(data['cpu_count']);
+                        $('#cpu_count_real').text(data['cpu_count_real']);
+                        $('#cpu_percent').text(data['cpu_percent']);
+                        $('#memory_total').text(data['memory_total']);
+                        $('#memory_available').text(data['memory_available']);
+                        $('#memory_free').text(data['memory_free']);
+                        $('#memory_used').text(data['memory_used']);
+                        $('#memory_percent').text(data['memory_percent']);
+                        $('#disk_data_total').text(data['disk_data']['total']);
+                        $('#disk_data_used').text(data['disk_data']['used']);
+                        $('#disk_data_free').text(data['disk_data']['free']);
+                        $('#disk_data_percent').text(data['disk_data']['percent']);
+                        $('#reload').html('<i class="bi bi-arrow-clockwise"></i> Refresh').removeClass('disabled');
+                    }
+                });
+            }
+
+            updateSystemInfo();
+
+            $('#reload').on('click', function () {
+                updateSystemInfo();
+            });
+        });
+    </script>
+{% endblock %}

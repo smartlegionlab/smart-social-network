@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ form.instance.pk|yesno:"Update profile,Create new profile" }}{% endblock %}
+
+{% block css %}
+    <link href="{% static 'vendors/selectize/selectize.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar %}
+    {% if form.instance.pk %}
+        {% include "admin_panel/users/_user_sidebar.html" with active_page='settings' %}
+    {% else %}
+        {% include "admin_panel/_admin_sidebar.html" with active_page='profiles' %}
+    {% endif %}
+{% endblock %}
+
+
+
+{% block content %}
+        <h1 class="text-center display-6">{{ form.instance.pk|yesno:"Update profile,Create new profile" }}:</h1>
+        <hr>
+        <form action="" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    {% if field.name == 'is_active' or field.name == 'is_staff' %}
+                        <div class="mb-3"></div>
+                    {% endif %}
+                    {{ field.label_tag }}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field|capfirst }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <hr>
+            <button type="submit" class="btn btn-success">
+                {{ form.instance.pk|yesno:"Update,Create" }}
+            </button>
+        </form>
+{% endblock %}
+
+{% block js %}
+
+    <script src="{% static 'vendors/selectize/selectize.min.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#id_new_password').val('');
+            $('#id_city').removeClass('form-control').selectize({
+                respect_word_boundaries: false,
+            });
+        });
+    </script>
+{% endblock %}

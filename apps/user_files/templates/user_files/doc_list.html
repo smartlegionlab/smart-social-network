@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load user_files_tags %}
+
+{% block title %}{% if is_owner %}Files{% else %}Files by user {{ profile.full_name }}{% endif %}{% endblock %}
+
+{% block css %}
+<style>
+.table-custom {
+    --bs-table-bg: #1a1a1a;
+    --bs-table-color: #e0e0e0;
+    --bs-table-border-color: #444;
+}
+
+.table-custom thead {
+    background-color: #2a2a2a;
+}
+
+.table-custom th {
+    color: #ffffff;
+    border-bottom: 2px solid #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table-custom tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table-custom tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.table-custom td {
+    vertical-align: middle;
+    border-top: 1px solid #333;
+}
+
+.table-custom .btn-group .btn {
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+.table-custom .btn-group .btn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.bi-eye-fill-table {
+    color: #28a745;
+}
+
+.bi-eye-slash-table {
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+    {% get_docs profile is_owner as files %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-filetype-doc me-2"></i>
+            {% if is_owner %}
+                Files
+            {% else %}
+                Files by user {{ profile.full_name }}
+            {% endif %}:
+        </h1>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url 'users:user_detail' profile.username %}" class="btn btn-outline-secondary d-lg-none">
+                <i class="bi bi-arrow-left"></i> {{ profile.full_name }}
+            </a>
+        </div>
+    </div>
+    <hr>
+
+    <div id="alert" class="alert alert-success m-3" role="alert" style="display: none;"></div>
+
+    {% if is_owner %}
+
+        <div class="btn-group btn-group-sm">
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Add new file" class="btn btn-success"
+               href="{% url "files:doc_upload" %}">+ Add</a>
+        </div>
+
+        <hr>
+
+    {% endif %}
+
+    {% if has_doc_files %}
+
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Size</th>
+                        <th>Is visible</th>
+                        <th>Upload date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for file in page_obj %}
+                        {% if is_owner or file.is_visible %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ file.title }}</td>
+                                <td>{{ file.description }}</td>
+                                <td>{{ file.show_size }}</td>
+                                <td>{% if file.is_visible %}<i class="bi bi-eye-fill bi-eye-fill-table"></i>{% else %}
+                                    <i class="bi bi-eye-slash bi-eye-slash-table"></i>{% endif %}</td>
+                                <td>{{ file.uploaded_at|date:"d.m.Y H:i:s" }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Download file"
+                                           onclick="return confirm('Are you sure?')"
+                                           href="{% url "files:doc_download" file.pk %}" class="btn btn-secondary">
+                                            <i class="bi bi-box-arrow-down"></i>
+                                        </a>
+                                        {% if is_owner %}
+                                            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Edit file"
+                                               href="{% url "files:doc_update" file.pk %}" class="btn btn-warning">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+                                            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Delete file"
+                                               onclick="return confirm('Are you sure?')"
+                                               href="{% url "files:doc_delete" file.pk %}" class="btn btn-danger">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </a>
+                                        {% else %}
+
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if page_obj.has_other_pages %} {% include "paginator.html" %} {% endif %}
+        {% else %}
+            <div class="alert alert-primary" role="alert">
+                Files not found...
+            </div>
+        {% endif %}
+
+{% endblock %}
+
+{% block js %}
+    <script>
+
+    </script>
+{% endblock %}

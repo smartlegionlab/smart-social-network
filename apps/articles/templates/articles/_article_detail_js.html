@@ -1,0 +1,262 @@
+<script>
+$(document).ready(function() {
+
+    function isTextEmpty(text) {
+        return !text || /^\s*$/.test(text);
+    }
+
+    const commentContent = $('#commentContent');
+    const commentSubmitBtn = $('#submit-comment');
+    const editCommentContent = $('#edit-comment-content');
+    const saveCommentChangesBtn = $('#save-comment-changes');
+
+
+    function checkCommentContent() {
+        const content = commentContent.val().trim();
+        commentSubmitBtn.prop('disabled', isTextEmpty(content));
+    }
+
+    function checkEditCommentContent() {
+        const content = editCommentContent.val().trim();
+        saveCommentChangesBtn.prop('disabled', isTextEmpty(content));
+    }
+
+
+    checkCommentContent();
+
+
+    commentContent.on('input', checkCommentContent);
+    editCommentContent.on('input', checkEditCommentContent);
+
+
+    const commentEmojiDropdown = new bootstrap.Dropdown(document.getElementById('commentEmojiDropdownBtn'));
+    const commentEmojiMenu = document.getElementById('commentEmojiDropdownMenu');
+
+    $('.comment-emoji-btn').click(function() {
+        const emoji = $(this).data('emoji');
+        const textarea = $('#commentContent');
+        const startPos = textarea[0].selectionStart;
+        const endPos = textarea[0].selectionEnd;
+        const currentText = textarea.val();
+
+        textarea.val(currentText.substring(0, startPos) + emoji + currentText.substring(endPos));
+        textarea.focus();
+        textarea[0].setSelectionRange(startPos + emoji.length, startPos + emoji.length);
+        checkCommentContent();
+    });
+
+    commentEmojiMenu.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    $(document).on('click', '.edit-comment-emoji-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const emoji = $(this).data('emoji');
+        const textarea = $('#edit-comment-content');
+        const startPos = textarea[0].selectionStart;
+        const endPos = textarea[0].selectionEnd;
+        const currentText = textarea.val();
+
+        textarea.val(currentText.substring(0, startPos) + emoji + currentText.substring(endPos));
+        textarea.focus();
+        textarea[0].setSelectionRange(startPos + emoji.length, startPos + emoji.length);
+        checkEditCommentContent();
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#commentEmojiDropdownContainer')) {
+            commentEmojiDropdown.hide();
+        }
+        if (!e.target.closest('#editCommentEmojiDropdownContainer')) {
+            bootstrap.Dropdown.getInstance(document.getElementById('editCommentEmojiDropdownBtn'))?.hide();
+        }
+    });
+
+
+    $('#clear-comment').click(function() {
+        $('#commentContent').val('').focus();
+        checkCommentContent();
+    });
+
+
+    $('#comment-form').on('submit', function(e) {
+        e.preventDefault();
+        const content = commentContent.val().trim();
+
+        if (isTextEmpty(content)) {
+            alert('Please enter some text before posting');
+            return;
+        }
+
+        const form = $(this);
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            success: function() {
+                let currentUrl = window.location.href;
+                let newUrl = currentUrl.split('?')[0];
+                window.location.href = newUrl;
+            },
+            error: function(xhr) {
+                alert('Error: ' + (xhr.responseJSON?.errors || 'Server error'));
+            }
+        });
+    });
+
+
+    $('.like-button').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const btn = $(this);
+        const icon = btn.find('.like-icon');
+        const articleId = btn.data('article-id');
+        const likeCount = $(`.like-count`);
+
+        icon.css('animation', 'none');
+        void icon[0].offsetWidth;
+        icon.addClass('heart-beat');
+        icon.css('animation', 'heartBeat 0.6s cubic-bezier(0.4, 0, 0.2, 1)');
+
+        $.ajax({
+            url: `{% url "articles:article_like_toggle" %}`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            data: {
+                article_id: articleId,
+            },
+            success: function(data) {
+                if (data.success) {
+                    btn.toggleClass('liked');
+                    btn.attr('title', data.liked ? 'Unlike' : 'Like');
+                    icon.toggleClass('bi-heart bi-heart-fill');
+                    likeCount.text(data.likes_count);
+                } else {
+                    alert('Error! The server returned an error. Try again later.');
+                }
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    });
+
+
+    $(document).on('click', '.btn-like', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const btn = $(this);
+        const icon = btn.find('.like-icon');
+        const commentId = btn.data('comment-id');
+        const likeCount = $(`#like-count-${commentId}`);
+
+        icon.css('animation', 'none');
+        void icon[0].offsetWidth;
+        icon.addClass('heart-beat');
+        icon.css('animation', 'heartBeat 0.6s cubic-bezier(0.4, 0, 0.2, 1)');
+
+        $.ajax({
+            url: `{% url "articles:article_comment_like_toggle" %}`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+                comment_id: commentId,
+            },
+            success: function(data) {
+                if (data.success) {
+                    btn.toggleClass('liked');
+                    btn.attr('title', data.liked ? 'Unlike' : 'Like');
+                    icon.toggleClass('bi-heart bi-heart-fill');
+                    likeCount.text(data.likes_count);
+                } else {
+                    alert('Error! The server returned an error. Try again later.');
+                }
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    });
+
+
+    $(document).on('click', '.delete-comment', function() {
+        if (!confirm('Are you sure you want to delete this comment?')) return;
+
+        const commentId = $(this).data('comment-id');
+
+        $.ajax({
+            url: "{% url 'articles:article_comment_delete' 0 %}".replace('0', commentId),
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert(response.error || 'Error deleting comment');
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 403) {
+                    alert('You do not have permission to delete this comment');
+                } else if (xhr.status === 404) {
+                    alert('Comment not found');
+                } else {
+                    alert('Server error');
+                }
+            }
+        });
+    });
+
+
+    $(document).on('click', '.edit-comment', function() {
+        const commentId = $(this).data('comment-id');
+        const commentContentText = $(`.comment[data-comment-id="${commentId}"] .comment-content`).text();
+
+        $('#edit-comment-id').val(commentId);
+        $('#edit-comment-content').val(commentContentText);
+
+        const modal = new bootstrap.Modal(document.getElementById('editCommentModal'));
+        modal.show();
+
+        setTimeout(() => {
+            $('#edit-comment-content').focus();
+            checkEditCommentContent();
+        }, 500);
+    });
+
+    $('#edit-comment-form').on('submit', function(e) {
+        e.preventDefault();
+        const content = editCommentContent.val().trim();
+
+        if (isTextEmpty(content)) {
+            alert('Please enter some text before saving');
+            return;
+        }
+
+        const commentId = $('#edit-comment-id').val();
+        $.ajax({
+            url: "{% url 'articles:article_comment_update' 0 %}".replace('0', commentId),
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function() {
+                location.reload();
+            },
+            error: function(xhr) {
+                alert('Error: ' + (xhr.responseJSON?.errors || 'Server error'));
+            }
+        });
+    });
+
+    $(document).on('input', '#edit-comment-content', checkEditCommentContent);
+});
+</script>

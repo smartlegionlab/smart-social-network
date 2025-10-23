@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Registration{% endblock %}
+
+{% block main %}
+    <div style="width: 70%; margin: 0 auto">
+        <h1 class="text-center display-6">Registration:</h1>
+        <hr>
+        <form method="post" id="registerForm">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field|capfirst }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+            <div id="message"></div>
+        </form>
+        <hr>
+
+        <div class="alert alert-warning" role="alert">
+            <p class="text-center lead">Already have an account? <a class="text-decoration-none text-success"
+                                                                    href="{% url 'users:login' %}">Sign in</a>.</p>
+        </div>
+        {% if site_config.email %}
+            <div class="alert alert-warning" role="alert">
+                <p class="text-center lead">If you have any difficulties with logging in or registering, please write <a
+                        class="text-decoration-none text-danger" href="mailto:{{ site_config.email }}">here</a>.</p>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        $(document).ready(function () {
+
+            $('#id_email, #id_first_name, #id_last_name, #id_password, #id_password_confirm').addClass('form-control');
+
+        })
+    </script>
+{% endblock %}

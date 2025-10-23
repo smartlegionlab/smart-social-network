@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Users{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Search Users</h2>
+                    <hr>
+                    <div class="search-bar mb-4">
+                        <form method="get" action="{% url 'users:users_search' %}" id="search-form">
+                            <div class="position-relative">
+                                <input type="text"
+                                       class="form-control form-control-lg ps-5"
+                                       name="q"
+                                       id="search-input"
+                                       placeholder="Search by name or username..."
+                                       value="{{ query }}"
+                                       autocomplete="off"
+                                       autofocus>
+                                <i class="bi bi-search position-absolute start-0 top-50 translate-middle-y ms-3 text-muted"></i>
+                            </div>
+                        </form>
+                    </div>
+                    <hr>
+
+                    <div class="rounded" id="search-results">
+                        {% include 'users/partials/user_search_results.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+    let searchTimer;
+
+    function updateClearButton() {
+        const query = $('#search-input').val().trim();
+        const $clearBtn = $('#clear-search');
+
+        if (query.length > 0 && $clearBtn.length === 0) {
+            $('#search-input').parent().append(
+                '<button id="clear-search" type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3">' +
+                '<i class="bi bi-x-lg text-muted"></i>' +
+                '</button>'
+            );
+
+            $('#clear-search').on('click', function() {
+                $('#search-input').val('').trigger('input');
+                $(this).remove();
+            });
+        } else if (query.length === 0 && $clearBtn.length > 0) {
+            $clearBtn.remove();
+        }
+    }
+
+    $('#search-input').on('input', function() {
+        clearTimeout(searchTimer);
+        updateClearButton();
+
+        const query = $(this).val().trim();
+
+        if (query.length >= 2) {
+            $('#search-results').html(
+                '<div class="text-center py-3">' +
+                '<div class="spinner-border text-primary"></div>' +
+                '</div>'
+            );
+
+            searchTimer = setTimeout(() => {
+                $.get('{% url "users:users_search" %}', { q: query }, function(data) {
+                    $('#search-results').html(data.html);
+                }).fail(function() {
+                    $('#search-results').html(
+                        '<div class="alert alert-danger">Error loading results</div>'
+                    );
+                });
+            }, 300);
+        } else if (query.length === 0) {
+            $('#search-results').html(
+                '<div class="text-center py-5">' +
+                '<i class="bi bi-people display-1 text-muted"></i>' +
+                '<p class="lead text-muted mt-3">Start typing to search for users</p>' +
+                '</div>'
+            );
+        }
+    });
+
+    updateClearButton();
+
+    $(document).on('click', '.page-link', function(e) {
+        e.preventDefault();
+        const url = $(this).attr('href');
+        $('#search-results').html(
+            '<div class="text-center py-3">' +
+            '<div class="spinner-border text-primary"></div>' +
+            '</div>'
+        );
+
+        $.get(url, function(data) {
+            $('#search-results').html(data.html);
+            history.pushState(null, null, url);
+        }).fail(function() {
+            $('#search-results').html(
+                '<div class="alert alert-danger">Error loading page</div>'
+            );
+        });
+    });
+});
+</script>
+{% endblock %}

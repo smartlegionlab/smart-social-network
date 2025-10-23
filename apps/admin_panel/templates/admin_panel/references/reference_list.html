@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}References{% endblock %}
+
+{% block sidebar %}
+    {% include "admin_panel/_admin_sidebar.html" with active_page='references' %}
+{% endblock %}
+
+{% block content %}
+
+    <h2 class="display-6 text-center">References: </h2>
+    <hr>
+
+    <div class="container">
+        <ul class="list-group">
+            <li data-bs-toggle="tooltip" data-bs-placement="top" title="Emoji"
+                class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{% url "admin_panel:emoji_list" %}">Emoji</a>
+                <span class="badge bg-primary rounded-pill">{{ emoji_list.count }}</span>
+            </li>
+            <li data-bs-toggle="tooltip" data-bs-placement="top" title="City"
+                class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{% url "admin_panel:city_list" %}">City</a>
+                <span class="badge bg-primary rounded-pill">{{ city_list.count }}</span>
+            </li>
+        </ul>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Article{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <h1 class="display-6 text-center">Article:</h1>
+            <hr>
+            <div>
+                <div class="btn-group btn-group-sm">
+                    <a href="{% url "admin_panel:article_list" %}" class="btn btn-secondary bi-arrow-left"></a>
+                </div>
+                <hr>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    {% if field.name != 'content' %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <div class="form-group">
+                    {{ form.content.label_tag }}
+                    {{ form.content }}
+
+                    {% if form.content.help_text %}
+                        <small class="form-text text-muted">{{ form.content.help_text }}</small>
+                    {% endif %}
+                    {% for error in form.content.errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                {{ form.media }}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ field|capfirst }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <hr>
+                <div class="btn-group btn-group-sm">
+                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Articles"
+                       class="btn btn-secondary bi-arrow-left" href="{% url "admin_panel:article_list" %}"></a>
+                    <button data-bs-toggle="tooltip" data-bs-placement="top" title="Save" class="btn btn-success"
+                            type="submit">Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+{% endblock %}

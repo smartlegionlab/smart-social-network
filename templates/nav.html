@@ -1,0 +1,121 @@
+{% load chat_tags %}
+{% load notices_tags %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark btn-secondary fixed-top"
+     style="box-shadow: 0 0 5px cornflowerblue;">
+    <div class="container">
+        <div class="d-flex align-items-center">
+            <a class="navbar-brand" href="{% url "users:current_user" %}">
+                <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="
+                        {% if site_config.description %}{{ site_config.description }}{% else %}Social Network{% endif %}">
+                    {% if site_config.name %}{{ site_config.name }}{% else %}Social Network{% endif %}
+                </span>
+            </a>
+
+            {% if request.user.is_authenticated %}
+                <ul class="navbar-icons navbar-nav ms-1 d-flex flex-row">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "users:current_user" %}" data-bs-toggle="tooltip"
+                           data-bs-placement="bottom" title="Profile">
+                            <i class="bi bi-house-door text-primary my_bi" id="new_post_icon">
+                                <sup class="text-primary" id="new_post_count" style="position: relative; top: -10px;">
+                                </sup>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "chats:active_chat_list" %}" data-bs-toggle="tooltip"
+                           data-bs-placement="bottom" title="Messages">
+                            <i class="bi bi-envelope text-warning" id="new_msg_icon">
+                                <sup id="message_count" class="text-warning" style="position: relative; top: -10px;">
+                                </sup>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "friends:incoming_request_list" %}" data-bs-toggle="tooltip"
+                           data-bs-placement="bottom" title="Friends">
+                            <i class="bi bi-people text-success" id="new_friend_icon">
+                                <sup id="new_friend_count" class="text-success" style="position: relative; top: -10px;">
+                                </sup>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{% url "visits:guest_visits" %}"
+                           data-bs-toggle="tooltip" data-bs-placement="bottom" title="Who Viewed My Profile?">
+                            <i id="view_icon" class="bi bi-eye"></i>
+                            <sup id="profile_view_count" style="position: relative; top: -10px;">
+                            </sup>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-primary" href="{% url "notices:notice_list" %}"
+                           data-bs-toggle="tooltip" data-bs-placement="bottom" title="Notifications">
+                            <i id="notification_icon"
+                               class="bi bi-bell">
+                                <sup id="profile_notification_count" style="position: relative; top: -10px;">
+                                </sup>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "users:users_search" %}" data-bs-toggle="tooltip"
+                           data-bs-placement="bottom" title="Search for users">
+                            <i class="bi bi-search text-secondary"></i>
+                        </a>
+                    </li>
+
+                </ul>
+            {% endif %}
+        </div>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="true">
+                            {% if request.user.full_name %}
+                                {{ request.user.full_name }}
+                            {% else %}
+                                {{ request.user.email }}
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="{% url "users:current_user" %}"><i
+                                    class="bi bi-house-door-fill"></i> Profile</a></li>
+                            {% if request.user.is_superuser %}
+                                <li><a class="dropdown-item text-primary" href="{% url "admin_panel:admin_panel" %}">
+                                    {% include "svg/incognito.html" %}
+                                    Admin Panel</a></li>
+                                <li><a target="_blank" rel="noopener noreferrer" class="dropdown-item text-danger" href="{% url "admin:index" %}"><i
+                                        class="bi bi-cpu"></i> Admin (Django)</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url "users:logout" %}">
+                                {% include "svg/person_walking.html" %}
+                                Exit</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    {% if request.path != '/login/' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url "users:login" %}">Sign in/Sign up</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

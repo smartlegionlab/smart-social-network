@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load chat_tags %}
+{% load chat_filters %}
+
+{% block title %}Archived Chats{% endblock %}
+
+{% block content %}
+
+    <div class="container py-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h1 class="h3 mb-0 text-warning">
+                <i class="bi bi-archive-fill" title="Archived"></i> Archived Chats
+                <sup>
+                    <span class="badge bg-primary ms-2">{{ archived_chats_count }}</span>
+                </sup>
+            </h1>
+
+        </div>
+
+        <hr>
+
+        <div class="btn-group btn-group-sm">
+            <a href="{% url "chats:active_chat_list" %}" class="btn btn-outline-primary">
+                <i class="bi bi-chat-left-text me-2"></i> Active Chats
+                <sup>{{ active_chats_count }}</sup>
+            </a>
+            <a href="{% url "chats:archived_chat_list" %}" class="btn btn-warning disabled">
+                <i class="bi bi-archive-fill" title="Archived"></i> Archived Chats
+                <sup>{{ archived_chats_count }}</sup>
+            </a>
+            <a href="{% url "chats:deleted_chat_list" %}" class="btn btn-outline-danger">
+                <i class="bi bi-trash-fill me-2"></i> Deleted Chats
+                <sup>{{ deleted_chats_count }}</sup>
+            </a>
+        </div>
+
+        <hr>
+
+        <div class="row g-3">
+            {% for chat in page_obj %}
+                <div class="col-12">
+                    <div class="card rounded" style="box-shadow: 0 0 5px var(--bs-warning)">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-shrink-0 me-3">
+                                    {% if chat.is_group %}
+                                        <div class="d-flex">
+                                            {% for user in chat.participants.all|slice:":3" %}
+                                                <a href="{% url 'users:user_detail' user.username %}"
+                                                   class="text-decoration-none position-relative">
+                                                    <img src="{{ user.get_avatar_url }}"
+                                                         class="rounded-circle border me-n2 object-fit-cover"
+                                                         width="40" height="40"
+                                                         style="z-index: {{ forloop.revcounter }}"
+                                                         alt="{{ user.username }}">
+                                                    <span class="position-absolute bottom-0 end-0 translate-middle p-1 bg-{% if user.is_online %}success{% else %}danger{% endif %} border border-light rounded-circle"></span>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {% for user in chat.participants.all %}
+                                            {% if user != request.user %}
+                                                <div class="d-flex">
+                                                    <a href="{% url 'users:user_detail' user.username %}"
+                                                       class="text-decoration-none position-relative">
+                                                        <img src="{{ user.get_avatar_url }}"
+                                                             class="rounded-circle border me-n2 object-fit-cover"
+                                                             width="40" height="40"
+                                                             style="z-index: {{ forloop.revcounter }}"
+                                                             alt="{{ user.username }}">
+                                                        <span class="position-absolute bottom-0 end-0 translate-middle p-1 bg-{% if user.is_online %}success{% else %}danger{% endif %} border border-light rounded-circle"></span>
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="mb-1">
+                                                {% if chat.is_group %}
+                                                    {{ chat.name|default:"Group Chat" }}
+                                                {% else %}
+                                                    {% for user in chat.participants.all %}
+                                                        {% if user != request.user %}
+                                                            <a href="{% url 'users:user_detail' user.username %}"
+                                                               class="text-decoration-none text-reset">
+                                                                {{ user.full_name|default:user.username }}
+                                                            </a>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </h5>
+                                            <small class="text-muted">
+                                                {% if chat.is_group %}
+                                                    <i class="bi bi-people-fill"></i>
+                                                    {{ chat.participants.all.count }} members
+                                                {% else %}
+                                                    {% for user in chat.participants.all %}
+                                                        {% if user != request.user %}
+                                                            <a href="{% url 'users:user_detail' user.username %}"
+                                                               class="text-decoration-none text-muted">
+                                                                @{{ user.username }}
+                                                            </a>
+                                                            {% if user.is_online %}
+                                                                <span class="badge bg-{% if user.is_online %}success{% else %}danger{% endif %} ms-2">{% if user.is_online %}
+                                                                    online{% else %}offline{% endif %}</span>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                <span class="ms-2">· Archived {{ chat.archived_at|timesince }} ago</span>
+                                            </small>
+                                        </div>
+                                        <div class="d-flex">
+                                            <a href="{% url 'chats:restore_archived_chat' chat.id %}"
+                                               class="btn btn-sm btn-success me-2"
+                                               onclick="return confirm('Restore this chat?')">
+                                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                            </a>
+                                            <a href="{% url 'chats:delete_chat' chat.id %}"
+                                               class="btn btn-sm btn-danger"
+                                               onclick="return confirm('Delete this chat?')">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="bi bi-archive display-1 text-muted mb-3"></i>
+                        <h4>No archived chats</h4>
+                    </div>
+                </div>
+            {% endfor %}
+            {% if page_obj.has_other_pages %} {% include "paginator.html" %} {% endif %}
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+{% endblock %}
