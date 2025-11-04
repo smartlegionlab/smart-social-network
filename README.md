@@ -127,14 +127,6 @@ The full development history with over 1000+ commits is available upon request f
 ### Package Installation
 
 #### Install Required Packages
-```bash
-# Install PostgreSQL
-sudo pacman -S postgresql
-
-# Start and enable services
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-```
 
 **For Redis:**
 ```bash
@@ -151,8 +143,19 @@ sudo systemctl enable valkey
 
 ### Database Setup
 
-#### Initialize PostgreSQL
+#### PostgreSQL Installation
+
 ```bash
+# Install PostgreSQL
+sudo pacman -S postgresql
+
+# Initialize database cluster
+sudo su - postgres -c "initdb --locale en_US.UTF-8 -D '/var/lib/postgres/data'"
+
+# Start and enable PostgreSQL service
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
 # Access PostgreSQL shell
 sudo -u postgres psql
 ```
