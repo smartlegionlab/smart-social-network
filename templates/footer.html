@@ -1,10 +1,12 @@
 <footer class="btn-dark text-white text-center text-lg-start" style="box-shadow: 0 0 5px cornflowerblue; margin-top: 15px">
 
     <div class="text-center p-2 btn-dark">
-        Copyright © 2024-2025
-        <a class="text-decoration-none text-primary" target="_blank" rel="noopener noreferrer" href="https://github.com/smartlegionlab">
-            Alexander Suvorov
-        </a>
-        ; All rights reserved.
+        <p class="text-muted">
+            © <span id="currentYear"></span> Alexander Suvorov
+        </p>
+
+        <script>
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        </script>
     </div>
 </footer>

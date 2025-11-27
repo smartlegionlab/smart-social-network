@@ -151,6 +151,7 @@ sudo pacman -S postgresql
 
 # Initialize database cluster
 sudo su - postgres -c "initdb --locale en_US.UTF-8 -D '/var/lib/postgres/data'"
+# Errors when running this command in Arch are resolved by deleting the postgres folder and reinstalling PostgreSQL
 
 # Start and enable PostgreSQL service
 sudo systemctl start postgresql
@@ -463,3 +464,63 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [![GitHub](https://img.shields.io/badge/GitHub-@smartlegionlab-blue?logo=github)](https://github.com/smartlegionlab)
 [![Email](https://img.shields.io/badge/Email-smartlegiondev@gmail.com-blue?logo=mail.ru)](mailto:smartlegiondev@gmail.com)
+
+---
+
+## Images
+
+![Smart Social Network](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/smart_social_network.png)
+
+![Smart Social Network Auth](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/auth.png)
+
+![Smart Social Network Profile](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/profile.png)
+
+![Smart Social Network Wall](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/wall.png)
+
+![Smart Social Network Chats](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/chats.png)
+
+![Smart Social Network Messages](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/messages.png)
+
+![Smart Social Network Friends](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/friends.png)
+
+![Smart Social Network Visits](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/visits.png)
+
+![Smart Social Network Notofocations](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/notofocations.png)
+
+![Smart Social Network Search](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/search.png)
+
+![Smart Social Network Articles](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/articles.png)
+
+![Smart Social Network Article](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/article.png)
+
+![Smart Social Network Audio](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/audio.png)
+
+![Smart Social Network Images](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/images.png)
+
+![Smart Social Network Docs](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/docs.png)
+
+![Smart Social Network Apps](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/apps.png)
+
+![Smart Social Network Smart Password Manager](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/smart-pass-man.png)
+
+![Smart Social Network Smart Password Generator](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/smart-password.png)
+
+![Smart Social Network TG 2FA](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/tg-2fa.png)
+
+![Smart Social Network User Profile](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/user-profile.png)
+
+![Smart Social Network User Report](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/user-report.png)
+
+![Smart Social Network Admin Articles](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-articles.png)
+
+![Smart Social Network Admin References](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-references.png)
+
+![Smart Social Network Admin Reports](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-reports.png)
+
+![Smart Social Network Admin Site Config](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-site-config.png)
+
+![Smart Social Network Admin System](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-system.png)
+
+![Smart Social Network Admin Users](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-users.png)
+
+
