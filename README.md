@@ -1,4 +1,4 @@
-# Smart Social Network <sup>v1.0.0</sup>
+# Smart Social Network <sup>v1.0.1</sup>
 
 ## 🌐 Modern Django-Powered Social Network Platform
 
@@ -13,11 +13,19 @@ The full development history with over 1000+ commits is available upon request f
 
 ---
 
-[![GitHub top language](https://img.shields.io/github/languages/top/smartlegionlab/smart-social-network)](https://github.com/smartlegionlab/smart-social-network)
-[![GitHub license](https://img.shields.io/github/license/smartlegionlab/smart-social-network)](https://github.com/smartlegionlab/smart-social-network/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/smartlegionlab/smart-social-network)](https://github.com/smartlegionlab/smart-social-network/)
-[![GitHub stars](https://img.shields.io/github/stars/smartlegionlab/smart-social-network?style=social)](https://github.com/smartlegionlab/smart-social-network/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/smartlegionlab/smart-social-network?style=social)](https://github.com/smartlegionlab/smart-social-network/network/members)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)](https://python.org)
+[![Django](https://img.shields.io/badge/Django-5.0+-green?logo=django)](https://djangoproject.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?logo=postgresql)](https://postgresql.org)
+[![Redis](https://img.shields.io/badge/Redis-Cache_&_Broker-red?logo=redis)](https://redis.io)
+[![Celery](https://img.shields.io/badge/Celery-Task_Queue-green)](https://docs.celeryq.dev)
+[![WebSocket](https://img.shields.io/badge/WebSocket-Real--time-yellow)](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+[![Arch Linux](https://img.shields.io/badge/Arch_Linux-Recommended-blue?logo=arch-linux)](https://archlinux.org)
+[![Telegram](https://img.shields.io/badge/Telegram-2FA_Bot-blue?logo=telegram)](https://telegram.org)
+[![License](https://img.shields.io/badge/License-BSD_3_Clause-lightgrey)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-1.0.1-important)](https://github.com/smartlegionlab/smart-social-network/releases)
+[![Project Version](https://img.shields.io/badge/Release-v1.0.1-blue)](https://github.com/smartlegionlab/smart-social-network)
+[![Project Status](https://img.shields.io/badge/Status-Active_Development-yellow)](https://github.com/smartlegionlab/smart-social-network)
+[![Dev.to Article](https://img.shields.io/badge/Article-dev.to-black?logo=dev.to)](https://dev.to/smartlegionlab/what-it-takes-to-build-a-modern-social-network-in-django-24dd)
 
 ---
 
@@ -127,14 +135,6 @@ The full development history with over 1000+ commits is available upon request f
 ### Package Installation
 
 #### Install Required Packages
-```bash
-# Install PostgreSQL
-sudo pacman -S postgresql
-
-# Start and enable services
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-```
 
 **For Redis:**
 ```bash
@@ -151,8 +151,20 @@ sudo systemctl enable valkey
 
 ### Database Setup
 
-#### Initialize PostgreSQL
+#### PostgreSQL Installation
+
 ```bash
+# Install PostgreSQL
+sudo pacman -S postgresql
+
+# Initialize database cluster
+sudo su - postgres -c "initdb --locale en_US.UTF-8 -D '/var/lib/postgres/data'"
+# Errors when running this command in Arch are resolved by deleting the postgres folder and reinstalling PostgreSQL
+
+# Start and enable PostgreSQL service
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
 # Access PostgreSQL shell
 sudo -u postgres psql
 ```
@@ -460,3 +472,63 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [![GitHub](https://img.shields.io/badge/GitHub-@smartlegionlab-blue?logo=github)](https://github.com/smartlegionlab)
 [![Email](https://img.shields.io/badge/Email-smartlegiondev@gmail.com-blue?logo=mail.ru)](mailto:smartlegiondev@gmail.com)
+
+---
+
+## Images
+
+![Smart Social Network](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/smart_social_network.png)
+
+![Smart Social Network Auth](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/auth.png)
+
+![Smart Social Network Profile](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/profile.png)
+
+![Smart Social Network Wall](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/wall.png)
+
+![Smart Social Network Chats](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/chats.png)
+
+![Smart Social Network Messages](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/messages.png)
+
+![Smart Social Network Friends](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/friends.png)
+
+![Smart Social Network Visits](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/visits.png)
+
+![Smart Social Network Notofocations](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/notofocations.png)
+
+![Smart Social Network Search](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/search.png)
+
+![Smart Social Network Articles](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/articles.png)
+
+![Smart Social Network Article](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/article.png)
+
+![Smart Social Network Audio](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/audio.png)
+
+![Smart Social Network Images](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/images.png)
+
+![Smart Social Network Docs](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/docs.png)
+
+![Smart Social Network Apps](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/apps.png)
+
+![Smart Social Network Smart Password Manager](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/smart-pass-man.png)
+
+![Smart Social Network Smart Password Generator](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/smart-password.png)
+
+![Smart Social Network TG 2FA](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/tg-2fa.png)
+
+![Smart Social Network User Profile](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/user-profile.png)
+
+![Smart Social Network User Report](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/user-report.png)
+
+![Smart Social Network Admin Articles](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-articles.png)
+
+![Smart Social Network Admin References](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-references.png)
+
+![Smart Social Network Admin Reports](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-reports.png)
+
+![Smart Social Network Admin Site Config](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-site-config.png)
+
+![Smart Social Network Admin System](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-system.png)
+
+![Smart Social Network Admin Users](https://github.com/smartlegionlab/smart-social-network/raw/master/data/images/admin-users.png)
+
+
