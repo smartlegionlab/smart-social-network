@@ -1,6 +1,6 @@
 # Smart Social Network <sup>v1.0.1</sup>
 
-## 🌐 Modern Django-Powered Social Network Platform
+## Modern Django-Powered Social Network Platform
 
 A comprehensive, feature-rich social networking platform built from the ground up with Django. 
 Smart Social Network offers a complete suite of social features with real-time interactions.
@@ -29,45 +29,55 @@ The full development history with over 1000+ commits is available upon request f
 
 ---
 
-## 📋 Table of Contents
+## ⚠️ Disclaimer
 
-1. [🌟 Key Features](#-key-features)
-2. [🏗️ Architecture & Tech Stack](#-architecture--tech-stack)
-3. [🚀 Quick Start](#-quick-start)
-4. [🔐 Authentication & Security](#-authentication--security)
-5. [💬 Social Features](#-social-features)
-6. [📱 Real-Time Communication](#-real-time-communication)
-7. [🎵 Media Management](#-media-management)
-8. [⚙️ Administration](#-administration)
-9. [📊 System Monitoring](#-system-monitoring)
-10. [🛠️ Installation Guide](#-installation-guide)
-11. [📜 License](#-license)
-12. [⚠️ Disclaimer](#-disclaimer)
+**By using this software, you agree to the full disclaimer terms.**
+
+**Summary:** Software provided "AS IS" without warranty. You assume all risks.
+
+**Full legal disclaimer:** See [DISCLAIMER.md](https://github.com/smartlegionlab/smart-social-network/blob/master/DISCLAIMER.md)
 
 ---
 
-## 🌟 Key Features
+## Table of Contents
 
-### 🔐 Advanced Authentication System
+1. [Key Features](#-key-features)
+2. [Architecture & Tech Stack](#-architecture--tech-stack)
+3. [Quick Start](#-quick-start)
+4. [Authentication & Security](#-authentication--security)
+5. [Social Features](#-social-features)
+6. [Real-Time Communication](#-real-time-communication)
+7. [Media Management](#-media-management)
+8. [Administration](#-administration)
+9. [System Monitoring](#-system-monitoring)
+10. [Installation Guide](#-installation-guide)
+11. [License](#-license)
+12. [Disclaimer](#-disclaimer)
+
+---
+
+## Key Features
+
+### Advanced Authentication System
 - **Secure and minimized** Registration & Login
 - **Custom Two-Factor Authentication** via Telegram bot integration
 - **Password Recovery** with Telegram bot verification
 - **Session Management** with comprehensive login history tracking
 
-### 👥 Complete User Profiles
+### Complete User Profiles
 - **Customizable Profiles** with avatar management (upload/reset to default)
 - **Real-time User Status Indicators** (online/offline)
 - **Profile Visits Tracking** with management
 - **Advanced Friends System** with request management and mutual connections
 - **Granular Privacy Controls** for profile visibility settings
 
-### 📝 Content Management
+### Content Management
 - **Personal Walls** for user posts
 - **Rich Text Posts** with emoji support (51+ integrated emojis)
 - **Post Interactions** - likes, comments, editing, deletion
 - **Intelligent Rate Limiting** for posts, comments and interactions
 
-### 💬 Advanced Messaging System
+### Advanced Messaging System
 - **Real-time Chat** with WebSocket integration for instant messaging
 - **Group Chats & Direct Messaging** with flexible participant management
 - **Message Editing** with instant synchronization across all users
@@ -75,19 +85,19 @@ The full development history with over 1000+ commits is available upon request f
 - **Typing Indicators** for enhanced communication
 - **Chat Categories** - organized into active, archived or deleted sections
 
-### 🎵 Multimedia Integration
+### Multimedia Integration
 - **Smart Audio Player** with visualizations and audio management
 - **Image Gallery** with comments, likes and privacy controls
 - **Document Management** with visibility settings and sharing capabilities
 - **Cross-user Media Sharing** with add audio to playlist
 - **Media Statistics** - analytics on likes
 
-### 🎮 Applications
+### Applications
 - **Integrated Apps Platform** for future extensions and integrations
 - **Built-in Smart Password Manager** for secure credential management
 - **Expandable Ecosystem** - designed for additional applications
 
-### 🔍 Additional Features
+### Additional Features
 - **User Search** with instant results
 - **News Section** with admin-published articles and engagement metrics
 - **Visits System** - track who visited your profile and who you visited
@@ -96,7 +106,7 @@ The full development history with over 1000+ commits is available upon request f
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## Architecture & Tech Stack
 
 ### Backend Technologies
 - **Django 5++** - Full-stack web framework with optimized performance
@@ -121,7 +131,7 @@ The full development history with over 1000+ commits is available upon request f
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### System Requirements
 
@@ -285,7 +295,7 @@ The admin interface will be available at:
 
 ---
 
-## 🔐 Authentication & Security
+## Authentication & Security
 
 ### Custom Two-Factor Authentication System
 - **Proprietary Implementation** - Unique authentication system developed from scratch
@@ -304,7 +314,7 @@ The admin interface will be available at:
 
 ---
 
-## 💬 Social Features
+## Social Features
 
 ### User Interaction System
 - **Advanced Friend System** - Mutual connections with request management
@@ -324,7 +334,7 @@ The admin interface will be available at:
 
 ---
 
-## 📱 Real-Time Communication
+## Real-Time Communication
 
 ### Chat & Messaging
 - **Instant Messaging** - Real-time delivery with WebSocket integration
@@ -342,7 +352,7 @@ The admin interface will be available at:
 
 ---
 
-## 🎵 Media Management
+## Media Management
 
 ### Audio System
 - **Smart Audio Player** - Advanced player with visualizations
@@ -361,7 +371,7 @@ The admin interface will be available at:
 
 ---
 
-## ⚙️ Administration
+## Administration
 
 - **Django and Custom Admin panel** protected from unauthorized access on request level
 
@@ -388,7 +398,7 @@ The admin interface will be available at:
 
 ---
 
-## 📊 System Monitoring
+## System Monitoring
 
 ### Real-time System Information
 ```
@@ -412,50 +422,11 @@ Disk: Total: 145.5gb | Busy: 32.0gb | Available: 112.5gb | Utilization percentag
 
 ---
 
-## ⚠️ Disclaimer
-
-**Important Legal Notice:** This software is provided for educational and research purposes only. The Smart Social Network platform is currently in active development and is not intended for production use.
-
-### Usage Restrictions:
-- 🚫 **Not for Production Use** - This is a development version with potential security vulnerabilities
-- 🚫 **No Warranty** - The software is provided "as is" without any guarantees
-- 🚫 **Legal Compliance** - Users are solely responsible for ensuring compliance with all applicable laws and regulations
-- 🚫 **Liability** - The author assumes no responsibility for any misuse or illegal activities conducted using this software
-
-### User Responsibility:
-By using this software, you acknowledge and agree that:
-- You are solely responsible for any content posted or shared through the platform
-- You will comply with all local, national, and international laws
-- You understand this is experimental software and may contain bugs or security issues
-- The author cannot be held liable for any damages or legal issues arising from use
-
-### Security Notice:
-While significant effort has been made to implement security measures, this software:
-- Has not undergone formal security auditing
-- May contain vulnerabilities
-- Should not be used with sensitive or personal data
-- Is intended for research and development purposes only
-
----
-
 ## 📜 License
 
 BSD 3-Clause License
 
-Copyright (c) 2025, Alexander Suvorov
-
-```
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-```
+Copyright (©) 2025, Alexander Suvorov
 
 ---
 
