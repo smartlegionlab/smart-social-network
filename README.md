@@ -24,7 +24,8 @@ The full development history with over 1000+ commits is available upon request f
 [![License](https://img.shields.io/badge/License-BSD_3_Clause-lightgrey)](LICENSE)
 [![Project Status](https://img.shields.io/badge/Status-Active_Development-yellow)](https://github.com/smartlegionlab/smart-social-network)
 [![Dev.to Article](https://img.shields.io/badge/Article-dev.to-black?logo=dev.to)](https://dev.to/smartlegionlab/what-it-takes-to-build-a-modern-social-network-in-django-24dd)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/smartlegionlab/smart-social-network)](https://github.com/smartlegionlab/smart-social-network/)[![GitHub stars](https://img.shields.io/github/stars/smartlegionlab/smart-social-network?style=social)](https://github.com/smartlegionlab/smart-social-network/stargazers)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/smartlegionlab/smart-social-network)](https://github.com/smartlegionlab/smart-social-network/)
+[![GitHub stars](https://img.shields.io/github/stars/smartlegionlab/smart-social-network?style=social)](https://github.com/smartlegionlab/smart-social-network/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/smartlegionlab/smart-social-network?style=social)](https://github.com/smartlegionlab/smart-social-network/network/members)
 ![GitHub top language](https://img.shields.io/github/languages/top/smartlegionlab/smart-social-network)
 
