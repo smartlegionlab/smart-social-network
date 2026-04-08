@@ -1,4 +1,4 @@
-# Smart Social Network <sup>v1.0.1</sup>
+# Smart Social Network <sup>v1.0.2</sup>
 
 ## Modern Django-Powered Social Network Platform
 
@@ -22,10 +22,11 @@ The full development history with over 1000+ commits is available upon request f
 [![Arch Linux](https://img.shields.io/badge/Arch_Linux-Recommended-blue?logo=arch-linux)](https://archlinux.org)
 [![Telegram](https://img.shields.io/badge/Telegram-2FA_Bot-blue?logo=telegram)](https://telegram.org)
 [![License](https://img.shields.io/badge/License-BSD_3_Clause-lightgrey)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0.1-important)](https://github.com/smartlegionlab/smart-social-network/releases)
-[![Project Version](https://img.shields.io/badge/Release-v1.0.1-blue)](https://github.com/smartlegionlab/smart-social-network)
 [![Project Status](https://img.shields.io/badge/Status-Active_Development-yellow)](https://github.com/smartlegionlab/smart-social-network)
 [![Dev.to Article](https://img.shields.io/badge/Article-dev.to-black?logo=dev.to)](https://dev.to/smartlegionlab/what-it-takes-to-build-a-modern-social-network-in-django-24dd)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/smartlegionlab/smart-social-network)](https://github.com/smartlegionlab/smart-social-network/)[![GitHub stars](https://img.shields.io/github/stars/smartlegionlab/smart-social-network?style=social)](https://github.com/smartlegionlab/smart-social-network/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/smartlegionlab/smart-social-network?style=social)](https://github.com/smartlegionlab/smart-social-network/network/members)
+![GitHub top language](https://img.shields.io/github/languages/top/smartlegionlab/smart-social-network)
 
 ---
 
